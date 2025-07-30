@@ -1,6 +1,5 @@
 # Portfolio Manager Training Project
 
-[TOC]
 
 ## Overview
 
