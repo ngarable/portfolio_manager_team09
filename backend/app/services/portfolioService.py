@@ -13,3 +13,4 @@ def get_assets():
         net_quantity > 0;""")
   orders = cursor.fetchall()
   return orders
+
