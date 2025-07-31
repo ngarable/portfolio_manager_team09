@@ -66,19 +66,7 @@ def buy_asset():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# TODO: DENIS
-# POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
-# *have a fake balance for now, ex: available_balance = 10000
-
-# GET /stock_allocation (returns a percentage for each stock in the portfolio)
-
-# LATER
-# GET /portfolio_value (returns the total value of the portfolio based on current market prices)
-
-# PUT /deposit (updates the available balance) (later)
-
-
-# GET /portfolio_value (returns the total value of the portfolio based on current market prices)
+#Blessing..Example use: http://localhost:5000/api/portfolio/portfolio_value
 @portfolio_bp.route("/portfolio_value", methods=["GET"])
 def get_portfolio_value():
     try:
@@ -98,3 +86,17 @@ def get_portfolio_value():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# TODO: DENIS
+# POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
+# *have a fake balance for now, ex: available_balance = 10000
+
+# GET /stock_allocation (returns a percentage for each stock in the portfolio)
+
+# LATER
+# GET /portfolio_value (returns the total value of the portfolio based on current market prices)
+
+# PUT /deposit (updates the available balance) (later)
+
+
+# GET /portfolio_value (returns the total value of the portfolio based on current market prices)
