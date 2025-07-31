@@ -1,8 +1,25 @@
 from flask import Blueprint, jsonify, request
-from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 
 portfolio_bp = Blueprint('portfolio', __name__)
+
+def fetch_assets():
+    try:
+        assets = portfolioService.get_assets()
+        if not assets:
+            return []
+        
+        data = []
+        for asset in assets:
+            data.append({
+                "ticker": asset[0],
+                "asset_type": asset[1],
+                "quantity": asset[2]
+            })
+        return data
+    except Exception as e:
+        print(f"Error fetching assets: {e}")
+        return []
 
 @portfolio_bp.route("/assets", methods=["GET"])
 def get_assets():
@@ -10,17 +27,8 @@ def get_assets():
         assets = fetch_assets()
         if not assets:
             return jsonify({"message": "No current assets found"}), 404
-        
-        data = []
-
-        for asset in assets:
-            data.append({
-                "ticker": asset[0],
-                "asset_type": asset[1],
-                "quantity": asset[2]
-            })
-
-        return jsonify(data), 200
+       
+        return jsonify(assets), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -69,7 +77,7 @@ def buy_asset():
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
 # *have a fake balance for now, ex: available_balance = 10000
 
-@portfolio_bp.route("/sell", methods=["POST"])
+@portfolio_bp.route("/assets/sell", methods=["POST"])
 def sell_asset():
     data = request.get_json()  # Parse JSON request body
     ticker_to_sell = data.get('ticker')
