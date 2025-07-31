@@ -59,6 +59,29 @@ def getPercentageChange(ticker):
         print(f"Error calculating change: {e}")
         return None
 
+ # Gets all stock details at once   
+def getStockDetails(ticker):
+    try:
+        info = yf.Ticker(ticker).info
+        return {
+            "ticker": ticker,
+            "shortName": info.get("shortName"),
+            "assetType": info.get("quoteType"),
+            "sector": info.get("sector"),
+            "industry": info.get("industry"),
+            "currency": info.get("currency"),
+            "exchange": info.get("exchange"),
+            "marketPrice": info.get("regularMarketPrice"),
+            "previousClose": info.get("previousClose"),
+            "fiftyTwoWeekHigh": info.get("fiftyTwoWeekHigh"),
+            "fiftyTwoWeekLow": info.get("fiftyTwoWeekLow"),
+            "dividendYield": info.get("dividendYield"),
+            "trailingPE": info.get("trailingPE")
+        }
+    except Exception as e:
+        print(f"Error fetching full details: {e}")
+        return None    
+
 
 
 
