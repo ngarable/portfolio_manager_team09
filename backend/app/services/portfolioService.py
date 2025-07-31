@@ -18,6 +18,21 @@ def get_assets():
     return orders
 
 
+def get_asset_allocation():
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+            SELECT
+                asset_type,
+                SUM(CASE WHEN type = 'BUY'  THEN quantity ELSE 0 END)
+              - SUM(CASE WHEN type = 'SELL' THEN quantity ELSE 0 END) AS net_quantity
+            FROM orders
+            GROUP BY asset_type
+            HAVING net_quantity > 0;
+        """)
+    rows = cursor.fetchall()
+    return rows
+
+
 def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
     buy_price = round(random.uniform(10.0, 500.0), 2)
     today = date.today()
