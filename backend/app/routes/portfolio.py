@@ -175,6 +175,23 @@ def asset_value_allocation():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+available_balance = {"value": 10000}
+
+@portfolio_bp.route("/deposit", methods=["PUT"])
+def deposit():
+    payload = request.get_json()
+    amount = payload.get("amount")
+    if not amount or float(amount) <= 0:
+        return jsonify({"error": "Invalid deposit amount"}), 400
+
+    available_balance["value"] += float(amount)
+    return jsonify({
+        "message": "Deposit successful",
+        "available_balance": available_balance["value"]
+    }), 200
+
 
 # LATER
 # GET /portfolio_value (returns the total value of the portfolio based on current market prices)
