@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PortfolioService } from '../services/portfolio.service';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { PortfolioService } from '../../services/portfolio.service';
 
 @Component({
   selector: 'app-assets',
@@ -11,14 +11,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './assets.component.css',
 })
 export class AssetsComponent implements OnInit {
-  portfolio: any[] = [];
+  assets: any[] = [];
 
   constructor(private portfolioService: PortfolioService) {}
 
   ngOnInit() {
     this.portfolioService.getAssets().subscribe({
       next: (data: any) => {
-        this.portfolio = data;
+        this.assets = data;
         console.log(data);
       },
       error: (err) => {
