@@ -46,6 +46,20 @@ def getPreviousClose(ticker):
         print(f"Error fetching previous close for {ticker}: {e}")
         return None
 
+#Returns % gain/loss for today.    
+def getPercentageChange(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        price = stock.info.get("regularMarketPrice")
+        prev = stock.info.get("previousClose")
+        if price is not None and prev is not None and prev != 0:
+            return round((price - prev) / prev * 100, 2)
+        return None
+    except Exception as e:
+        print(f"Error calculating change: {e}")
+        return None
+
+
 
 
     
