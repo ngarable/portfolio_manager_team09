@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 
 portfolio_bp = Blueprint('portfolio', __name__)
+
 
 @portfolio_bp.route("/assets", methods=["GET"])
 def get_assets():
@@ -9,7 +10,7 @@ def get_assets():
         assets = portfolioService.get_assets()
         if not assets:
             return jsonify({"message": "No current assets found"}), 404
-        
+
         data = []
 
         for asset in assets:
@@ -22,10 +23,31 @@ def get_assets():
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-# TODO: CORALIE
-# POST buy (use fake market price for now)
-# GET /asset_allocation (returns a percentage for each asset type)
+
+
+@portfolio_bp.route("/assets/buy", methods=["POST"])
+def buy_asset():
+    payload = request.get_json() or {}
+    ticker = payload.get("ticker")
+    asset_type = payload.get("asset_type")
+    quantity = payload.get("quantity")
+
+    if not all([ticker, asset_type, quantity]):
+        return jsonify(
+            {"error": "Fields 'ticker', 'asset_type' and 'quantity' are required"}
+        ), 400
+
+    try:
+        order = portfolioService.buy_asset(ticker, asset_type, quantity)
+        return jsonify({
+            "message": "Buy order placed successfully",
+            "order": order
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+ # GET /asset_allocation (returns a percentage for each asset type)
 
 # TODO: DENIS
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
@@ -37,4 +59,3 @@ def get_assets():
 # GET /portfolio_value (returns the total value of the portfolio based on current market prices)
 
 # PUT /deposit (updates the available balance) (later)
-
