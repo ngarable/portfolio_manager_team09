@@ -80,7 +80,14 @@ def getStockDetails(ticker):
         }
     except Exception as e:
         print(f"Error fetching full details: {e}")
+        return None 
+
+def getName(ticker):
+    try:
+        return yf.Ticker(ticker).info.get("shortName")
+    except Exception:
         return None    
+
 
 
 

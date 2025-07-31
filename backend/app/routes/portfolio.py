@@ -94,6 +94,39 @@ def get_portfolio_value():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@portfolio_bp.route("/gainers-losers", methods=["GET"])
+def gainers_losers():
+    try:
+        assets = fetch_assets()
+        changes = []
+
+        for asset in assets:
+            ticker = asset['ticker']
+            change = yfinanceService.getPercentageChange(ticker)
+            name = yfinanceService.getName(ticker)
+            if change is not None:
+                changes.append({
+                    "ticker": ticker,
+                    "name": name,
+                    "change": change
+                })
+
+        # Sort by change percentage
+        sorted_changes = sorted(changes, key=lambda x: x["change"], reverse=True)
+
+        top_gainers = sorted_changes[:5]
+        top_losers = sorted_changes[-5:][::-1]  # last 5, reversed to show biggest drop first
+
+        return jsonify({
+            "gainers": top_gainers,
+            "losers": top_losers
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # TODO: DENIS
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
