@@ -26,15 +26,30 @@ def getAssetType(ticker):
         return None
     
 
+# Fetch sector (e.g., Technology, Healthcare, Real Estate)
+def getSector(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        sector = stock.info.get("sector")  # Example: "Technology"
+        return sector
+    except Exception as e:
+        print(f"Error fetching sector for {ticker}: {e}")
+        return None
+
+    
+
 #Testing Code
 # if __name__ == "__main__":
 #     print("Testing yfinanceService...\n")
 
 #     ticker = "AAPL"
-#     ticker2 = "AMD"
+#     # ticker2 = "AMD"
 
 #     price = getMarketPrice(ticker)
+#     sector = getSector(ticker)
 #     print(f"Market Price of {ticker}: {price}")
+#     print(f"Sector of {ticker}: {sector}")
+
 
 #     price2 = getMarketPrice(ticker2)
 #     print(f"Market Price of {ticker2}: {price2}")
