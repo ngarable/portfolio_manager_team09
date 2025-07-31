@@ -36,6 +36,18 @@ def getSector(ticker):
         print(f"Error fetching sector for {ticker}: {e}")
         return None
 
+#Shows how price changed today    
+def getPreviousClose(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        previous_close = stock.info.get("previousClose")
+        return previous_close
+    except Exception as e:
+        print(f"Error fetching previous close for {ticker}: {e}")
+        return None
+
+
+
     
 
 #Testing Code
