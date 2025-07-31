@@ -83,7 +83,7 @@ def get_portfolio_value():
 
         for asset in assets:
             ticker = asset[0]
-            quantity = asset[2]
+            quantity = float(asset[2]) 
             price = yfinanceService.getMarketPrice(ticker)
             if price is not None:
                 total_value += quantity * price
