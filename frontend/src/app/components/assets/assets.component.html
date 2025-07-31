@@ -1,0 +1,16 @@
+<table *ngIf="assets.length > 0" class="portfolio-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Type</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let a of assets">
+      <td>{{ a.ticker }}</td>
+      <td>{{ a.asset_type }}</td>
+      <td>{{ a.quantity }}</td>
+    </tr>
+  </tbody>
+</table>

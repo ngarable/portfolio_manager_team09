@@ -1,0 +1,55 @@
+# Byte‑compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# dotenv
+.env
+.env.*
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Database files
+*.sqlite3
+
+# Migrations (Django, Flask, Alembic…)
+migrations/
+alembic/versions/
+
+# Caches
+.cache/
+*.cache
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+
+# Sphinx documentation
+docs/_build/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
