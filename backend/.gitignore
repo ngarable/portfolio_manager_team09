@@ -29,6 +29,7 @@ htmlcov/
 
 # Database files
 *.sqlite3
+*.sqlite
 
 # Migrations (Django, Flask, Alembic…)
 migrations/
@@ -41,6 +42,8 @@ alembic/versions/
 # Type checkers
 .mypy_cache/
 .dmypy.json
+
+
 
 # Sphinx documentation
 docs/_build/

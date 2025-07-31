@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from app.services import portfolioService
+from app.services import yfinanceService
 
 portfolio_bp = Blueprint('portfolio', __name__)
 
@@ -69,6 +70,27 @@ def buy_asset():
             "message": "Buy order placed successfully",
             "order": order
         }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+#Blessing..Example use: http://localhost:5000/api/portfolio/portfolio_value
+@portfolio_bp.route("/portfolio_value", methods=["GET"])
+def get_portfolio_value():
+    try:
+        assets = portfolioService.get_assets()
+        total_value = 0
+
+        for asset in assets:
+            ticker = asset[0]
+            quantity = asset[2]
+            price = yfinanceService.getMarketPrice(ticker)
+            if price is not None:
+                total_value += quantity * price
+
+        return jsonify({
+            "portfolio_value": round(total_value, 2)
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -158,3 +180,6 @@ def asset_value_allocation():
 # GET /portfolio_value (returns the total value of the portfolio based on current market prices)
 
 # PUT /deposit (updates the available balance) (later)
+
+
+# GET /portfolio_value (returns the total value of the portfolio based on current market prices)
