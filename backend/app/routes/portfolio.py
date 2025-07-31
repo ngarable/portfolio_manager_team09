@@ -26,6 +26,24 @@ def get_assets():
         return jsonify({"error": str(e)}), 500
 
 
+@portfolio_bp.route("/asset_allocation", methods=["GET"])
+def get_asset_allocation():
+    try:
+        assets = portfolioService.get_asset_allocation()
+        total = sum(row[1] for row in assets)
+        allocation = [
+            {
+                "asset_type": row[0],
+                "percent": round((row[1] / total) * 100, 2)
+            }
+            for row in assets
+        ]
+        return jsonify(allocation), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @portfolio_bp.route("/assets/buy", methods=["POST"])
 def buy_asset():
     payload = request.get_json() or {}
@@ -47,8 +65,6 @@ def buy_asset():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
- # GET /asset_allocation (returns a percentage for each asset type)
 
 # TODO: DENIS
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data

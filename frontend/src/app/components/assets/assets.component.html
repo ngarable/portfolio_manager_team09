@@ -15,6 +15,20 @@
   </tbody>
 </table>
 
+<div *ngIf="allocation.length">
+  <h3>Allocation by Asset Type</h3>
+  <div class="pie-chart" [style.background]="pieGradient"></div>
+  <ul class="legend">
+    <li *ngFor="let a of allocation; let i = index">
+      <span
+        class="color-box"
+        [style.background]="colors[i % colors.length]"
+      ></span>
+      {{ a.asset_type }} ({{ a.percent }}%)
+    </li>
+  </ul>
+</div>
+
 <form (ngSubmit)="buyAsset()" #buyForm="ngForm" class="buy-form">
   <h3>Buy New Asset</h3>
   <div>
