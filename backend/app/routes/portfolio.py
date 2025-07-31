@@ -1,22 +1,8 @@
 from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 
 portfolio_bp = Blueprint('portfolio', __name__)
-
-def fetch_assets():
-    assets = portfolioService.get_assets()
-    if not assets:
-        return None
-    
-    result = []
-
-    for asset in assets:
-        result.append({
-            "ticker": asset[0],
-            "asset_type": asset[1],
-            "quantity": asset[2]
-        })
-    return result
 
 @portfolio_bp.route("/assets", methods=["GET"])
 def get_assets():
@@ -24,13 +10,60 @@ def get_assets():
         assets = fetch_assets()
         if not assets:
             return jsonify({"message": "No current assets found"}), 404
-        return jsonify(assets), 200
+        
+        data = []
+
+        for asset in assets:
+            data.append({
+                "ticker": asset[0],
+                "asset_type": asset[1],
+                "quantity": asset[2]
+            })
+
+        return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-# TODO: CORALIE
-# POST buy (use fake market price for now)
-# GET /asset_allocation (returns a percentage for each asset type)
+
+
+@portfolio_bp.route("/asset_allocation", methods=["GET"])
+def get_asset_allocation():
+    try:
+        assets = portfolioService.get_asset_allocation()
+        total = sum(row[1] for row in assets)
+        allocation = [
+            {
+                "asset_type": row[0],
+                "percent": round((row[1] / total) * 100, 2)
+            }
+            for row in assets
+        ]
+        return jsonify(allocation), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@portfolio_bp.route("/assets/buy", methods=["POST"])
+def buy_asset():
+    payload = request.get_json() or {}
+    ticker = payload.get("ticker")
+    asset_type = payload.get("asset_type")
+    quantity = payload.get("quantity")
+
+    if not all([ticker, asset_type, quantity]):
+        return jsonify(
+            {"error": "Fields 'ticker', 'asset_type' and 'quantity' are required"}
+        ), 400
+
+    try:
+        order = portfolioService.buy_asset(ticker, asset_type, quantity)
+        return jsonify({
+            "message": "Buy order placed successfully",
+            "order": order
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # TODO: DENIS
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
@@ -117,4 +150,3 @@ def asset_value_allocation():
 # GET /portfolio_value (returns the total value of the portfolio based on current market prices)
 
 # PUT /deposit (updates the available balance) (later)
-
