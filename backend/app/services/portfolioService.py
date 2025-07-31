@@ -1,5 +1,5 @@
 from datetime import date
-import random
+from app.services.yfinanceService import getMarketPrice
 from ..db import mysql
 
 
@@ -34,7 +34,11 @@ def get_asset_allocation():
 
 
 def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
-    buy_price = round(random.uniform(10.0, 500.0), 2)
+    market_price = getMarketPrice(ticker)
+    if market_price is None:
+        buy_price = 0
+    else:
+        buy_price = round(market_price, 2)
     today = date.today()
 
     cursor = mysql.connection.cursor()
@@ -45,16 +49,13 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
             (%s, 'BUY', %s, %s, %s, %s, %s)
     """, (today, ticker, asset_type, quantity, buy_price, quantity))
     mysql.connection.commit()
-
     order_id = cursor.lastrowid
-    cursor.close()
-
     return {
-        "id":               order_id,
-        "ticker":           ticker,
-        "asset_type":       asset_type,
-        "quantity":         quantity,
-        "buy_price":        buy_price,
+        "id":                 order_id,
+        "ticker":             ticker,
+        "asset_type":         asset_type,
+        "quantity":           quantity,
+        "buy_price":          buy_price,
         "remaining_quantity": quantity,
-        "date":             today.isoformat()
+        "date":               today.isoformat()
     }

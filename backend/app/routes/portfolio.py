@@ -65,8 +65,6 @@ def buy_asset():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
- # GET /asset_allocation (returns a percentage for each asset type)
-
 # TODO: DENIS
 # POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
 # *have a fake balance for now, ex: available_balance = 10000
