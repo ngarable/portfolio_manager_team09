@@ -2,6 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Allocation, StockDetail } from '../interfaces/portfolio';
 
+
+export interface GainerLoser {
+  ticker: string;
+  name: string;
+  change: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -32,5 +39,17 @@ export class PortfolioService {
 
   deposit(amount: number) {
     return this.http.put('/api/portfolio/deposit', { amount });
+  }
+
+  sellAsset(payload: { ticker: string; quantity: number }) {
+    return this.http.post('/api/portfolio/assets/sell', payload);
+  }
+
+  getPortfolioValue() {
+    return this.http.get<{ portfolio_value: number }>('/api/portfolio/portfolio_value');
+  }
+
+  getGainersLosers() {
+    return this.http.get<{ gainers: GainerLoser[]; losers: GainerLoser[] }>('/api/portfolio/gainers-losers');
   }
 }
