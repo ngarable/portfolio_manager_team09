@@ -19,8 +19,7 @@ def fetch_assets():
             data.append({
                 "ticker": asset[0],
                 "asset_type": asset[1],
-                "price": asset[2],
-                "quantity": asset[3]
+                "quantity": asset[2]
             })
         return data
     except Exception as e:
@@ -255,7 +254,6 @@ def deposit():
         "message": "Deposit successful",
         "available_balance": available_balance["value"]
     }), 200
-
 
 @portfolio_bp.route("/balance", methods=["GET"])
 def get_balance():
