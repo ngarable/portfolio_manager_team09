@@ -78,22 +78,26 @@ def buy_asset():
 @portfolio_bp.route("/portfolio_value", methods=["GET"])
 def get_portfolio_value():
     try:
-        assets = portfolioService.get_assets()
-        total_value = 0
-
-        for asset in assets:
-            ticker = asset[0]
-            quantity = float(asset[2]) 
-            price = yfinanceService.getMarketPrice(ticker)
-            if price is not None:
-                total_value += quantity * price
-
+        total_value = calculate_portfolio_value()
         return jsonify({
             "portfolio_value": round(total_value, 2)
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+def calculate_portfolio_value():
+    assets = portfolioService.get_assets()
+    total_value = 0
+
+    for asset in assets:
+        ticker = asset[0]
+        quantity = float(asset[2])
+        price = yfinanceService.getMarketPrice(ticker)
+        if price is not None:
+            total_value += quantity * price
+
+    return round(total_value, 2)
     
 
 @portfolio_bp.route("/gainers-losers", methods=["GET"])
@@ -192,7 +196,8 @@ def asset_value_allocation():
         if not assets:
             return jsonify({"message": "No current assets found"}), 404
 
-        portfolio_value = get_portfolio_value()['portfolio_value']
+        portfolio_value = calculate_portfolio_value()
+
         if portfolio_value is None:
             return jsonify({"error": "Could not calculate portfolio value"}), 500
 
@@ -200,11 +205,14 @@ def asset_value_allocation():
 
         for asset in assets:
 
-            market_price = yfinanceService.getMarketPrice(asset['ticker'])
+            market_price = float(yfinanceService.getMarketPrice(asset['ticker']))
             if market_price is None:
                 return jsonify({"error": f"Market price not available for {asset['ticker']}"}), 500
             
-            allocation_percentage = round((asset['quantity'] * market_price) / portfolio_value * 100, 2)
+            quantity = float(asset['quantity'])
+            total_value = quantity * market_price
+
+            allocation_percentage = round(total_value / portfolio_value * 100, 2)
             holdings.append({
                 "ticker": asset['ticker'],
                 "allocation_percentage": allocation_percentage,
