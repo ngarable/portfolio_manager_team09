@@ -5,10 +5,12 @@ from ..db import mysql
 
 def get_assets():
     cursor = mysql.connection.cursor()
-    cursor.execute("""SELECT ticker, asset_type, sum(remaining_quantity) as net_quantity
-    FROM orders
-    WHERE remaining_quantity > 0
-    GROUP BY ticker, asset_type;""")
+    cursor.execute("""SELECT ticker, asset_type,
+            ROUND(SUM(price * quantity) / NULLIF(SUM(quantity), 0),2) AS weighted_avg_price,
+            SUM(remaining_quantity) AS net_quantity
+            FROM orders
+            WHERE remaining_quantity > 0
+            GROUP BY ticker, asset_type;""")
     orders = cursor.fetchall()
     return orders
 
