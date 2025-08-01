@@ -58,21 +58,11 @@ def buy_asset():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# CHANGE FOR PRICE INSTEAD OF QTE
-
 
 @portfolio_bp.route("/asset_allocation", methods=["GET"])
 def get_asset_allocation():
     try:
-        assets = portfolioService.get_asset_allocation()
-        total = sum(row[1] for row in assets)
-        allocation = [
-            {
-                "asset_type": row[0],
-                "percent": round((row[1] / total) * 100, 2)
-            }
-            for row in assets
-        ]
+        allocation = portfolioService.get_asset_value_allocation()
         return jsonify(allocation), 200
 
     except Exception as e:
@@ -140,10 +130,6 @@ def gainers_losers():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# TODO: DENIS
-# POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
-# *have a fake balance for now, ex: available_balance = 10000
 
 @portfolio_bp.route("/assets/sell", methods=["POST"])
 def sell_asset():
