@@ -9,7 +9,9 @@ export class PortfolioService {
   constructor(private http: HttpClient) {}
 
   getBalance() {
-    return this.http.get<{ available_balance: number }>('/api/portfolio/balance');
+    return this.http.get<{ available_balance: number }>(
+      '/api/portfolio/balance'
+    );
   }
 
   getAssets() {

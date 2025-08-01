@@ -1,104 +1,115 @@
-<!-- TABLE WITH ASSETS -->
-<table *ngIf="assets.length > 0" class="portfolio-table">
-  <thead>
-    <tr>
-      <th>Ticker</th>
-      <th>Type</th>
-      <th>Quantity</th>
-      <th>Weighted average price</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let a of assets">
-      <td>{{ a.ticker }}</td>
-      <td>{{ a.asset_type }}</td>
-      <td>{{ a.quantity }}</td>
-      <td>{{ a.price }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- CHARTS OF ASSETS ALLOCATION -->
-<div *ngIf="allocation.length">
-  <h3>Allocation by Asset Type</h3>
-  <div class="pie-chart" [style.background]="pieGradient"></div>
-  <ul class="legend">
-    <li *ngFor="let a of allocation; let i = index">
-      <span
-        class="color-box"
-        [style.background]="colors[i % colors.length]"
-      ></span>
-      {{ a.asset_type }} ({{ a.percent }}%)
-    </li>
-  </ul>
-</div>
-
-<!-- BALANCE -->
-<div class="balance-display">
-  Available Balance:
-  {{ currentBalance | currency : "USD" : "symbol" : "1.2-2" }}
-</div>
-
-<!-- BUY NEW ASSET -->
-<button class="buy-main-btn" (click)="openBuyModal()">BUY</button>
-<div class="modal-backdrop" *ngIf="showBuyModal">
-  <div class="modal">
-    <h2>Buy New Asset</h2>
-    <form (ngSubmit)="buyAsset()" #buyForm="ngForm">
-      <div>
-        <label for="ticker">Ticker</label>
-        <input
-          id="ticker"
-          name="ticker"
-          type="text"
-          required
-          [(ngModel)]="newAsset.ticker"
-        />
+<div class="assets-dashboard">
+  <div class="dashboard">
+    <header class="dashboard__header">
+      <div class="dashboard__balance">
+        Available Balance:
+        <span class="dashboard__balance-value">
+          {{ currentBalance | currency : "USD" : "symbol" : "1.2-2" }}
+        </span>
       </div>
-      <div>
-        <label for="assetType">Type</label>
-        <input
-          id="assetType"
-          name="asset_type"
-          type="text"
-          required
-          [(ngModel)]="newAsset.asset_type"
-        />
-      </div>
-      <div>
-        <label for="quantity">Quantity</label>
-        <input
-          id="quantity"
-          name="quantity"
-          type="number"
-          required
-          [(ngModel)]="newAsset.quantity"
-        />
-      </div>
+      <button class="dashboard__buy-btn" (click)="openBuyModal()">BUY</button>
+    </header>
 
-      <div class="modal-buttons">
-        <button type="submit" [disabled]="buyForm.invalid">Confirm Buy</button>
-        <button type="button" (click)="closeBuyModal()">Cancel</button>
-      </div>
-    </form>
-
-    <h3>Available Stocks</h3>
-    <ul class="available-list">
-      <li *ngFor="let stock of availableStocks">
-        <button type="button" (click)="selectTicker(stock.ticker)">
-          {{ stock.ticker }} —
-          {{ stock.shortName || "N/A" }}
-        </button>
-        <div class="stock-info">
-          <p>Price: {{ stock.marketPrice | number : "1.2-2" }}</p>
-          <p>
-            Change vs. Prev Close:
-            {{ stock.pctChange != null ? stock.pctChange + "%" : "N/A" }}
-          </p>
-          <p>Sector: {{ stock.sector || "N/A" }}</p>
-          <p>Industry: {{ stock.industry || "N/A" }}</p>
+    <div class="dashboard__content">
+      <!-- Assets Table -->
+      <section class="assets">
+        <h2 class="assets__title">My Holdings</h2>
+        <div
+          class="assets__table-container"
+          *ngIf="assets.length; else noAssets"
+        >
+          <table class="assets__table">
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Avg. Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of assets">
+                <td>{{ a.ticker }}</td>
+                <td>{{ a.asset_type }}</td>
+                <td>{{ a.quantity }}</td>
+                <td>{{ a.price | number : "1.2-2" }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </li>
-    </ul>
+        <ng-template #noAssets>
+          <p class="assets__empty">You have no assets yet.</p>
+        </ng-template>
+      </section>
+
+      <!-- Allocation Chart -->
+      <section class="allocation" *ngIf="allocation.length">
+        <h2 class="allocation__title">Asset Allocation</h2>
+        <div class="allocation__chart">
+          <div class="pie-chart" [style.background]="pieGradient"></div>
+        </div>
+        <ul class="allocation__legend">
+          <li
+            *ngFor="let a of allocation; let i = index"
+            class="allocation__legend-item"
+          >
+            <span
+              class="allocation__color-box"
+              [style.background]="colors[i % colors.length]"
+            ></span>
+            {{ a.asset_type }} — {{ a.percent }}%
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <!-- Buy Modal -->
+  <div class="modal-backdrop" *ngIf="showBuyModal">
+    <div class="modal">
+      <h2 class="modal__title">Buy New Asset</h2>
+      <form (ngSubmit)="buyAsset()" #buyForm="ngForm" class="modal__form">
+        <label>
+          Ticker
+          <input name="ticker" required [(ngModel)]="newAsset.ticker" />
+        </label>
+        <label>
+          Type
+          <input name="asset_type" required [(ngModel)]="newAsset.asset_type" />
+        </label>
+        <label>
+          Quantity
+          <input
+            name="quantity"
+            type="number"
+            required
+            [(ngModel)]="newAsset.quantity"
+          />
+        </label>
+
+        <div class="modal__buttons">
+          <button type="submit" [disabled]="buyForm.invalid">Confirm</button>
+          <button type="button" (click)="closeBuyModal()">Cancel</button>
+        </div>
+      </form>
+
+      <h3 class="modal__subtitle">Available Stocks</h3>
+      <ul class="modal__stock-list">
+        <li *ngFor="let stock of availableStocks" class="modal__stock-item">
+          <button type="button" (click)="selectTicker(stock.ticker)">
+            {{ stock.ticker }} — {{ stock.shortName || "N/A" }}
+          </button>
+          <div class="modal__stock-info">
+            <p>Price: {{ stock.marketPrice | number : "1.2-2" }}</p>
+            <p>
+              Now vs Prev Close:
+              {{ stock.pctChange != null ? stock.pctChange + "%" : "N/A" }}
+            </p>
+            <p>Sector: {{ stock.sector || "N/A" }}</p>
+            <p>Industry: {{ stock.industry || "N/A" }}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
