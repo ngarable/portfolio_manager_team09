@@ -31,6 +31,11 @@
   </ul>
 </div>
 
+<!-- BALANCE -->
+<div class="balance-display">
+  Available Balance: {{ currentBalance | currency:'USD':'symbol':'1.2-2' }}
+</div>
+
 <!-- BUY NEW ASSET -->
 <button class="buy-main-btn" (click)="openBuyModal()">BUY</button>
 <div class="modal-backdrop" *ngIf="showBuyModal">

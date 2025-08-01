@@ -1,8 +1,11 @@
+import traceback
 from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 from app.services import yfinanceService
 
 portfolio_bp = Blueprint('portfolio', __name__)
+
+available_balance = {"value": 10000}
 
 
 def fetch_assets():
@@ -48,14 +51,29 @@ def buy_asset():
             {"error": "Fields 'ticker', 'asset_type' and 'quantity' are required"}
         ), 400
 
+    price = yfinanceService.getMarketPrice(ticker)
+    if price is None:
+        return jsonify({"error": f"Could not fetch price for {ticker}"}), 500
+    total_cost = price * quantity
+
+    if available_balance["value"] < total_cost:
+        return jsonify({
+            "error": "Insufficient funds",
+            "available_balance": available_balance["value"],
+            "required": total_cost
+        }), 400
+
     try:
         order = portfolioService.buy_asset(ticker, asset_type, quantity)
+        available_balance["value"] -= total_cost
         return jsonify({
             "message": "Buy order placed successfully",
-            "order": order
+            "order": order,
+            "available_balance": available_balance["value"]
         }), 201
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -224,9 +242,6 @@ def asset_value_allocation():
         return jsonify({"error": str(e)}), 500
 
 
-available_balance = {"value": 10000}
-
-
 @portfolio_bp.route("/deposit", methods=["PUT"])
 def deposit():
     payload = request.get_json()
@@ -239,6 +254,10 @@ def deposit():
         "message": "Deposit successful",
         "available_balance": available_balance["value"]
     }), 200
+
+@portfolio_bp.route("/balance", methods=["GET"])
+def get_balance():
+    return jsonify({"available_balance": available_balance["value"]}), 200
 
 
 @portfolio_bp.route("/stock/<string:ticker>", methods=["GET"])

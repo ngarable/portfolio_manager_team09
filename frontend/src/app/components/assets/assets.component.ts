@@ -16,8 +16,10 @@ export class AssetsComponent implements OnInit {
   newAsset = { ticker: '', asset_type: '', quantity: null as number | null };
   allocation: Allocation[] = [];
 
-  showBuyModal     = false;
-  availableTickers = ['AAPL','MSFT','GOOG','AMZN','TSLA'];
+  public currentBalance = 0;
+
+  showBuyModal = false;
+  availableTickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA'];
   availableStocks: StockDetail[] = [];
 
   public pieGradient = '';
@@ -28,6 +30,7 @@ export class AssetsComponent implements OnInit {
   ngOnInit() {
     this.loadAssets();
     this.loadAllocation();
+    this.loadBalance();
   }
 
   loadAssets() {
@@ -47,20 +50,31 @@ export class AssetsComponent implements OnInit {
     });
   }
 
+  loadBalance() {
+    this.portfolioService.getBalance().subscribe({
+      next: (res: any) => (this.currentBalance = res.available_balance),
+      error: (_) => console.warn('Could not load balance'),
+    });
+  }
+
   openBuyModal() {
     this.newAsset = { ticker: '', asset_type: '', quantity: null };
     this.availableStocks = [];
     for (const t of this.availableTickers) {
       this.portfolioService.getStockDetails(t).subscribe({
-        next: detail => {
+        next: (detail) => {
           if (detail.marketPrice != null && detail.previousClose) {
             (detail as any).pctChange =
-              Math.round(((detail.marketPrice - detail.previousClose) /
-                          detail.previousClose) * 100 * 100) / 100;
+              Math.round(
+                ((detail.marketPrice - detail.previousClose) /
+                  detail.previousClose) *
+                  100 *
+                  100
+              ) / 100;
           }
           this.availableStocks.push(detail);
         },
-        error: err => console.warn(`no data for ${t}`, err)
+        error: (err) => console.warn(`no data for ${t}`, err),
       });
     }
     this.showBuyModal = true;
@@ -72,7 +86,7 @@ export class AssetsComponent implements OnInit {
   closeBuyModal() {
     this.showBuyModal = false;
   }
-  
+
   buyAsset() {
     const { ticker, asset_type, quantity } = this.newAsset;
     if (!ticker || !asset_type || quantity == null) {
@@ -81,15 +95,33 @@ export class AssetsComponent implements OnInit {
 
     this.portfolioService.buyAsset({ ticker, asset_type, quantity }).subscribe({
       next: (res: any) => {
+        const order = res.order;
         console.log('Buy response:', res);
+
         this.assets.push({
-          ticker: res.ticker,
-          asset_type: res.asset_type,
-          quantity: res.quantity,
+          ticker: order.ticker,
+          asset_type: order.asset_type,
+          quantity: order.quantity,
         });
+
         this.newAsset = { ticker: '', asset_type: '', quantity: null };
+
+        if (res.available_balance != null) {
+          this.currentBalance = res.available_balance;
+        }
       },
-      error: (err) => console.error('Buy error:', err),
+      error: (err) => {
+        if (err.status === 400 && err.error?.error === 'Insufficient funds') {
+          alert(
+            `Not enough funds!\n` +
+              `You have $${err.error.available_balance}, ` +
+              `but need $${err.error.required}.`
+          );
+        } else {
+          console.error('Buy error:', err);
+          alert('An unexpected error occurred. Please try again.');
+        }
+      },
     });
   }
 

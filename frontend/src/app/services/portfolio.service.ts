@@ -8,6 +8,10 @@ import { Allocation, StockDetail } from '../interfaces/portfolio';
 export class PortfolioService {
   constructor(private http: HttpClient) {}
 
+  getBalance() {
+    return this.http.get<{ available_balance: number }>('/api/portfolio/balance');
+  }
+
   getAssets() {
     return this.http.get('/api/portfolio/assets');
   }
