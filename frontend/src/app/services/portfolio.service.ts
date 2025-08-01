@@ -9,6 +9,11 @@ export interface GainerLoser {
   change: number;
 }
 
+export interface ValueAllocation {
+  ticker: string;
+  allocation_percentage: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
