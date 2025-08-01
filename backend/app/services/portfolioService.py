@@ -4,13 +4,14 @@ from ..db import mysql
 
 
 def get_assets():
-  cursor = mysql.connection.cursor()
-  cursor.execute("""SELECT ticker, asset_type, sum(remaining_quantity) as net_quantity
+    cursor = mysql.connection.cursor()
+    cursor.execute("""SELECT ticker, asset_type, sum(remaining_quantity) as net_quantity
     FROM orders
     WHERE remaining_quantity > 0
     GROUP BY ticker, asset_type;""")
-  orders = cursor.fetchall()
-  return orders
+    orders = cursor.fetchall()
+    return orders
+
 
 def get_remaining_asset_batches(ticker):
     cursor = mysql.connection.cursor()
@@ -31,6 +32,7 @@ def get_remaining_asset_batches(ticker):
         })
     return data
 
+
 def update_order_quantity(order_id, new_quantity):
     cursor = mysql.connection.cursor()
     query = "UPDATE orders SET remaining_quantity = %s WHERE id = %s"
@@ -38,6 +40,7 @@ def update_order_quantity(order_id, new_quantity):
     mysql.connection.commit()
     cursor.close()
     return True
+
 
 def sell_asset(ticker, quantity, market_price, asset_type):
     cursor = mysql.connection.cursor()
@@ -54,7 +57,6 @@ def sell_asset(ticker, quantity, market_price, asset_type):
     cursor.close()
     return True
 
-   
 
 def get_asset_allocation():
     cursor = mysql.connection.cursor()

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Allocation, PortfolioService } from '../../services/portfolio.service';
 import { FormsModule } from '@angular/forms';
+import { Allocation, StockDetail } from '../../interfaces/portfolio';
+import { PortfolioService } from '../../services/portfolio.service';
 
 @Component({
   selector: 'app-assets',
@@ -14,6 +15,10 @@ export class AssetsComponent implements OnInit {
   assets: any[] = [];
   newAsset = { ticker: '', asset_type: '', quantity: null as number | null };
   allocation: Allocation[] = [];
+
+  showBuyModal     = false;
+  availableTickers = ['AAPL','MSFT','GOOG','AMZN','TSLA'];
+  availableStocks: StockDetail[] = [];
 
   public pieGradient = '';
   public colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0'];
@@ -42,6 +47,32 @@ export class AssetsComponent implements OnInit {
     });
   }
 
+  openBuyModal() {
+    this.newAsset = { ticker: '', asset_type: '', quantity: null };
+    this.availableStocks = [];
+    for (const t of this.availableTickers) {
+      this.portfolioService.getStockDetails(t).subscribe({
+        next: detail => {
+          if (detail.marketPrice != null && detail.previousClose) {
+            (detail as any).pctChange =
+              Math.round(((detail.marketPrice - detail.previousClose) /
+                          detail.previousClose) * 100 * 100) / 100;
+          }
+          this.availableStocks.push(detail);
+        },
+        error: err => console.warn(`no data for ${t}`, err)
+      });
+    }
+    this.showBuyModal = true;
+  }
+
+  selectTicker(t: string) {
+    this.newAsset.ticker = t;
+  }
+  closeBuyModal() {
+    this.showBuyModal = false;
+  }
+  
   buyAsset() {
     const { ticker, asset_type, quantity } = this.newAsset;
     if (!ticker || !asset_type || quantity == null) {

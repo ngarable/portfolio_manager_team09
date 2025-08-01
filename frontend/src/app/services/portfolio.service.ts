@@ -1,10 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
-export interface Allocation {
-  asset_type: string;
-  percent: number;
-}
+import { Allocation, StockDetail } from '../interfaces/portfolio';
 
 @Injectable({
   providedIn: 'root',
@@ -22,5 +18,9 @@ export class PortfolioService {
 
   buyAsset(payload: { ticker: string; asset_type: string; quantity: number }) {
     return this.http.post('/api/portfolio/assets/buy', payload);
+  }
+
+  getStockDetails(ticker: string) {
+    return this.http.get<StockDetail>(`/api/portfolio/stock/${ticker}`);
   }
 }

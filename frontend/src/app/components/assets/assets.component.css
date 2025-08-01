@@ -39,3 +39,93 @@
   margin-right: 0.5em;
   display: inline-block;
 }
+
+
+/* BUY button on main page */
+.buy-main-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90%;
+  overflow-y: auto;
+}
+
+/* Form buttons */
+.modal-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+.modal-buttons button:first-child {
+  background-color: #4caf50;
+  color: white;
+}
+.modal-buttons button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Available‐tickers list */
+.available-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.available-list li {
+  margin: 0.25rem 0;
+}
+.available-list li button {
+  background: none;
+  border: none;
+  color: #2196f3;
+  cursor: pointer;
+  padding: 0;
+}
+.available-list li button:hover {
+  text-decoration: underline;
+}
+
+.available-list li {
+  margin-bottom: 1rem;
+  padding: .5rem;
+  border-bottom: 1px solid #eee;
+}
+.stock-info {
+  margin-left: 1.5rem;
+  font-size: .9rem;
+  color: #555;
+}
