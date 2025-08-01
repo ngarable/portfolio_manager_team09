@@ -29,4 +29,8 @@ export class PortfolioService {
   getStockDetails(ticker: string) {
     return this.http.get<StockDetail>(`/api/portfolio/stock/${ticker}`);
   }
+
+  deposit(amount: number) {
+    return this.http.put('/api/portfolio/deposit', { amount });
+  }
 }
