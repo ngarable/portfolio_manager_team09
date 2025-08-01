@@ -5,6 +5,7 @@
       <th>Ticker</th>
       <th>Type</th>
       <th>Quantity</th>
+      <th>Price</th>
     </tr>
   </thead>
   <tbody>
@@ -12,6 +13,7 @@
       <td>{{ a.ticker }}</td>
       <td>{{ a.asset_type }}</td>
       <td>{{ a.quantity }}</td>
+      <td>{{ a.price }}</td>
     </tr>
   </tbody>
 </table>
@@ -33,7 +35,8 @@
 
 <!-- BALANCE -->
 <div class="balance-display">
-  Available Balance: {{ currentBalance | currency:'USD':'symbol':'1.2-2' }}
+  Available Balance:
+  {{ currentBalance | currency : "USD" : "symbol" : "1.2-2" }}
 </div>
 
 <!-- BUY NEW ASSET -->
