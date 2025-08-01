@@ -5,10 +5,12 @@ from ..db import mysql
 
 def get_assets():
     cursor = mysql.connection.cursor()
-    cursor.execute("""SELECT ticker, asset_type, sum(remaining_quantity) as net_quantity
-    FROM orders
-    WHERE remaining_quantity > 0
-    GROUP BY ticker, asset_type;""")
+    cursor.execute("""SELECT ticker, asset_type,
+            ROUND(SUM(price * quantity) / NULLIF(SUM(quantity), 0),2) AS weighted_avg_price,
+            SUM(remaining_quantity) AS net_quantity
+            FROM orders
+            WHERE remaining_quantity > 0
+            GROUP BY ticker, asset_type;""")
     orders = cursor.fetchall()
     return orders
 
@@ -77,25 +79,47 @@ def sell_asset(ticker, quantity, market_price, asset_type):
     return True
 
 
-def get_asset_allocation():
+def get_asset_value_allocation() -> list[dict]:
     cursor = mysql.connection.cursor()
     cursor.execute("""
-            SELECT
-                asset_type,
-                SUM(CASE WHEN type = 'BUY'  THEN quantity ELSE 0 END)
-              - SUM(CASE WHEN type = 'SELL' THEN quantity ELSE 0 END) AS net_quantity
-            FROM orders
-            GROUP BY asset_type
-            HAVING net_quantity > 0;
-        """)
+        SELECT
+            ticker,
+            asset_type,
+            SUM(remaining_quantity) AS quantity
+        FROM orders
+        WHERE remaining_quantity > 0
+        GROUP BY ticker, asset_type
+    """)
     rows = cursor.fetchall()
-    return rows
+    cursor.close()
+
+    totals_by_type: dict[str, float] = {}
+    overall_total = 0.0
+
+    for ticker, asset_type, quantity in rows:
+        price = getMarketPrice(ticker) or 0.0
+        value = price * float(quantity)
+        totals_by_type.setdefault(asset_type, 0.0)
+        totals_by_type[asset_type] += value
+        overall_total += value
+
+    result = []
+    for asset_type, value in totals_by_type.items():
+        pct = round((value / overall_total) * 100,
+                    2) if overall_total > 0 else 0.0
+        result.append({
+            "asset_type": asset_type,
+            "value":       round(value, 2),
+            "percent":     pct
+        })
+
+    return result
 
 
 def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
     market_price = getMarketPrice(ticker)
     if market_price is None:
-        buy_price = 0
+        price = 0
     else:
         buy_price = round(market_price, 2)
 
@@ -113,6 +137,6 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
         "ticker":             ticker,
         "asset_type":         asset_type,
         "quantity":           quantity,
-        "buy_price":          buy_price,
+        "buy_price":          price,
         "remaining_quantity": quantity,
     }

@@ -1,8 +1,11 @@
+import traceback
 from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 from app.services import yfinanceService
 
 portfolio_bp = Blueprint('portfolio', __name__)
+
+available_balance = {"value": 10000}
 
 
 def fetch_assets():
@@ -16,7 +19,8 @@ def fetch_assets():
             data.append({
                 "ticker": asset[0],
                 "asset_type": asset[1],
-                "quantity": asset[2]
+                "price": asset[2],
+                "quantity": asset[3]
             })
         return data
     except Exception as e:
@@ -59,31 +63,36 @@ def buy_asset():
             {"error": "Fields 'ticker', 'asset_type' and 'quantity' are required"}
         ), 400
 
+    price = yfinanceService.getMarketPrice(ticker)
+    if price is None:
+        return jsonify({"error": f"Could not fetch price for {ticker}"}), 500
+    total_cost = price * quantity
+
+    if available_balance["value"] < total_cost:
+        return jsonify({
+            "error": "Insufficient funds",
+            "available_balance": available_balance["value"],
+            "required": total_cost
+        }), 400
+
     try:
         order = portfolioService.buy_asset(ticker, asset_type, quantity)
+        available_balance["value"] -= total_cost
         return jsonify({
             "message": "Buy order placed successfully",
-            "order": order
+            "order": order,
+            "available_balance": available_balance["value"]
         }), 201
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
-# CHANGE FOR PRICE INSTEAD OF QTE
 
 
 @portfolio_bp.route("/asset_allocation", methods=["GET"])
 def get_asset_allocation():
     try:
-        assets = portfolioService.get_asset_allocation()
-        total = sum(row[1] for row in assets)
-        allocation = [
-            {
-                "asset_type": row[0],
-                "percent": round((row[1] / total) * 100, 2)
-            }
-            for row in assets
-        ]
+        allocation = portfolioService.get_asset_value_allocation()
         return jsonify(allocation), 200
 
     except Exception as e:
@@ -151,10 +160,6 @@ def gainers_losers():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# TODO: DENIS
-# POST sell (use fake market price for now) after implementing the yfinanceService, we will get real data
-# *have a fake balance for now, ex: available_balance = 10000
 
 @portfolio_bp.route("/assets/sell", methods=["POST"])
 def sell_asset():
@@ -249,9 +254,6 @@ def asset_value_allocation():
         return jsonify({"error": str(e)}), 500
 
 
-available_balance = {"value": 10000}
-
-
 @portfolio_bp.route("/deposit", methods=["PUT"])
 def deposit():
     payload = request.get_json()
@@ -264,6 +266,11 @@ def deposit():
         "message": "Deposit successful",
         "available_balance": available_balance["value"]
     }), 200
+
+
+@portfolio_bp.route("/balance", methods=["GET"])
+def get_balance():
+    return jsonify({"available_balance": available_balance["value"]}), 200
 
 
 @portfolio_bp.route("/stock/<string:ticker>", methods=["GET"])

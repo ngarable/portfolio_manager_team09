@@ -18,6 +18,8 @@ export class AssetsComponent implements OnInit {
 
   showBuyModal = false;
   availableTickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA'];
+  public currentBalance = 0;
+
   availableStocks: StockDetail[] = [];
 
   public pieGradient = '';
@@ -28,6 +30,7 @@ export class AssetsComponent implements OnInit {
   ngOnInit() {
     this.loadAssets();
     this.loadAllocation();
+    this.loadBalance();
   }
 
   loadAssets() {
@@ -44,6 +47,13 @@ export class AssetsComponent implements OnInit {
         this.updatePieGradient();
       },
       error: (err) => console.error(err),
+    });
+  }
+
+  loadBalance() {
+    this.portfolioService.getBalance().subscribe({
+      next: (res: any) => (this.currentBalance = res.available_balance),
+      error: (_) => console.warn('Could not load balance'),
     });
   }
 
@@ -85,15 +95,29 @@ export class AssetsComponent implements OnInit {
 
     this.portfolioService.buyAsset({ ticker, asset_type, quantity }).subscribe({
       next: (res: any) => {
+        const order = res.order;
         console.log('Buy response:', res);
-        this.assets.push({
-          ticker: res.ticker,
-          asset_type: res.asset_type,
-          quantity: res.quantity,
-        });
+
         this.newAsset = { ticker: '', asset_type: '', quantity: null };
+
+        if (res.available_balance != null) {
+          this.currentBalance = res.available_balance;
+        }
+
+        this.loadAssets();
+        this.loadAllocation();
+        this.loadBalance();
       },
-      error: (err) => console.error('Buy error:', err),
+      error: (err) => {
+        if (err.status === 400 && err.error?.error === 'Insufficient funds') {
+          alert(
+            `Not enough funds!\nYou have $${err.error.available_balance}, but need $${err.error.required}.`
+          );
+        } else {
+          console.error('Buy error:', err);
+          alert('An unexpected error occurred. Please try again.');
+        }
+      },
     });
   }
 
