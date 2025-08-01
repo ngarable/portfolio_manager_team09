@@ -16,8 +16,8 @@ export class AssetsComponent implements OnInit {
   newAsset = { ticker: '', asset_type: '', quantity: null as number | null };
   allocation: Allocation[] = [];
 
-  showBuyModal     = false;
-  availableTickers = ['AAPL','MSFT','GOOG','AMZN','TSLA'];
+  showBuyModal = false;
+  availableTickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA'];
   availableStocks: StockDetail[] = [];
 
   public pieGradient = '';
@@ -52,15 +52,19 @@ export class AssetsComponent implements OnInit {
     this.availableStocks = [];
     for (const t of this.availableTickers) {
       this.portfolioService.getStockDetails(t).subscribe({
-        next: detail => {
+        next: (detail) => {
           if (detail.marketPrice != null && detail.previousClose) {
             (detail as any).pctChange =
-              Math.round(((detail.marketPrice - detail.previousClose) /
-                          detail.previousClose) * 100 * 100) / 100;
+              Math.round(
+                ((detail.marketPrice - detail.previousClose) /
+                  detail.previousClose) *
+                  100 *
+                  100
+              ) / 100;
           }
           this.availableStocks.push(detail);
         },
-        error: err => console.warn(`no data for ${t}`, err)
+        error: (err) => console.warn(`no data for ${t}`, err),
       });
     }
     this.showBuyModal = true;
@@ -72,7 +76,7 @@ export class AssetsComponent implements OnInit {
   closeBuyModal() {
     this.showBuyModal = false;
   }
-  
+
   buyAsset() {
     const { ticker, asset_type, quantity } = this.newAsset;
     if (!ticker || !asset_type || quantity == null) {

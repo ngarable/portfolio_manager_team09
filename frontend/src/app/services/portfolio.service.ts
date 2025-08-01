@@ -23,4 +23,8 @@ export class PortfolioService {
   getStockDetails(ticker: string) {
     return this.http.get<StockDetail>(`/api/portfolio/stock/${ticker}`);
   }
+
+  getRecentOrders() {
+    return this.http.get('/api/portfolio/recent_orders');
+  }
 }

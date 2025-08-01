@@ -22,6 +22,17 @@ def fetch_assets():
     except Exception as e:
         print(f"Error fetching assets: {e}")
         return []
+    
+@portfolio_bp.route("/recent_orders", methods=["GET"])
+def get_recent_orders():
+    try:
+        orders = portfolioService.get_recent_orders()
+        if not orders:
+            return jsonify({"message": "No recent orders found"}), 404
+
+        return jsonify(orders), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @portfolio_bp.route("/assets", methods=["GET"])

@@ -12,6 +12,25 @@ def get_assets():
     orders = cursor.fetchall()
     return orders
 
+def get_recent_orders():
+    sql = """SELECT date, ticker, type, quantity, price FROM portfolio_db.orders
+    ORDER BY date DESC
+    LIMIT 10;"""
+    cursor = mysql.connection.cursor()
+    cursor.execute(sql)
+    orders = cursor.fetchall()
+    data = []
+    for order in orders:
+        date_str = order[0].strftime('%Y-%m-%d')  # format date here
+        data.append({
+            "date": date_str,
+            "ticker": order[1],
+            "type": order[2],
+            "quantity": order[3],
+            "price": order[4]
+        })
+    return data
+
 
 def get_remaining_asset_batches(ticker):
     cursor = mysql.connection.cursor()
@@ -79,15 +98,14 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
         buy_price = 0
     else:
         buy_price = round(market_price, 2)
-    today = date.today()
 
     cursor = mysql.connection.cursor()
     cursor.execute("""
         INSERT INTO orders
-            (date, type, ticker, asset_type, quantity, buy_price, remaining_quantity)
+            (type, ticker, asset_type, quantity, price, remaining_quantity)
         VALUES
-            (%s, 'BUY', %s, %s, %s, %s, %s)
-    """, (today, ticker, asset_type, quantity, buy_price, quantity))
+            ('BUY', %s, %s, %s, %s, %s)
+    """, (ticker, asset_type, quantity, buy_price, quantity))
     mysql.connection.commit()
     order_id = cursor.lastrowid
     return {
@@ -97,5 +115,4 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
         "quantity":           quantity,
         "buy_price":          buy_price,
         "remaining_quantity": quantity,
-        "date":               today.isoformat()
     }
