@@ -98,24 +98,20 @@ export class AssetsComponent implements OnInit {
         const order = res.order;
         console.log('Buy response:', res);
 
-        this.assets.push({
-          ticker: order.ticker,
-          asset_type: order.asset_type,
-          quantity: order.quantity,
-        });
-
         this.newAsset = { ticker: '', asset_type: '', quantity: null };
 
         if (res.available_balance != null) {
           this.currentBalance = res.available_balance;
         }
+
+        this.loadAssets();
+        this.loadAllocation();
+        this.loadBalance();
       },
       error: (err) => {
         if (err.status === 400 && err.error?.error === 'Insufficient funds') {
           alert(
-            `Not enough funds!\n` +
-              `You have $${err.error.available_balance}, ` +
-              `but need $${err.error.required}.`
+            `Not enough funds!\nYou have $${err.error.available_balance}, but need $${err.error.required}.`
           );
         } else {
           console.error('Buy error:', err);
