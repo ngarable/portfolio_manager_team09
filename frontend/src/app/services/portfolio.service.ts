@@ -57,4 +57,8 @@ export class PortfolioService {
   getGainersLosers() {
     return this.http.get<{ gainers: GainerLoser[]; losers: GainerLoser[] }>('/api/portfolio/gainers-losers');
   }
+
+  getValueAllocation() {
+    return this.http.get<ValueAllocation[]>('/api/portfolio/asset_value_allocation');
+  }
 }
