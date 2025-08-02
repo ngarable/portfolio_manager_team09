@@ -1,19 +1,55 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AssetsComponent } from '../assets/assets.component';
+import { BuyModalComponent } from '../buy-modal/buy-modal.component';
+import { AssetsChartsComponent } from '../assets-charts/assets-charts.component';
 import { PortfolioTableComponent } from '../portfolio-table/portfolio-table.component';
+import { PortfolioService } from '../../services/portfolio.service';
+import { BalanceComponent } from '../balance/balance.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,
     CommonModule,
-    AssetsComponent,
+    BuyModalComponent,
+    AssetsChartsComponent,
     PortfolioTableComponent,
+    BalanceComponent,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrls: ['./app.component.css'],
 })
-export class AppComponent {}
+export class AppComponent {
+  @ViewChild(BuyModalComponent) buyModal!: BuyModalComponent;
+  @ViewChild(AssetsChartsComponent) charts!: AssetsChartsComponent;
+  @ViewChild(PortfolioTableComponent) table!: PortfolioTableComponent;
+
+  constructor(private portfolioService: PortfolioService) {}
+
+  openBuy() {
+    this.buyModal.open();
+  }
+
+  handlePurchase(evt: {
+    ticker: string;
+    asset_type: string;
+    quantity: number;
+  }) {
+    this.portfolioService.buyAsset(evt).subscribe({
+      next: () => {
+        this.table.loadAssets();
+        this.charts.reloadAllocs();
+      },
+      error: (err) => {
+        if (err.status === 400 && err.error?.error === 'Insufficient funds') {
+          alert(
+            `Not enough funds!\nYou have $${err.error.available_balance}, but need $${err.error.required}.`
+          );
+        } else {
+          console.error('Buy failed', err);
+          alert('Buy failed; see console for details.');
+        }
+      },
+    });
+  }
+}

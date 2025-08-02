@@ -14,6 +14,7 @@ def get_assets():
     orders = cursor.fetchall()
     return orders
 
+
 def get_recent_orders():
     sql = """SELECT date, ticker, type, quantity, price FROM portfolio_db.orders
     ORDER BY date DESC
@@ -119,7 +120,7 @@ def get_asset_value_allocation() -> list[dict]:
 def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
     market_price = getMarketPrice(ticker)
     if market_price is None:
-        price = 0
+        buy_price = 0
     else:
         buy_price = round(market_price, 2)
 
@@ -137,6 +138,6 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
         "ticker":             ticker,
         "asset_type":         asset_type,
         "quantity":           quantity,
-        "buy_price":          price,
+        "buy_price":          buy_price,
         "remaining_quantity": quantity,
     }

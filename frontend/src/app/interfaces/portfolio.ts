@@ -1,6 +1,11 @@
-export interface Allocation {
+export interface TypeAllocation {
   asset_type: string;
   percent: number;
+}
+
+export interface ValueAllocation {
+  ticker: string;
+  allocation_percentage: number;
 }
 
 export interface StockDetail {
@@ -11,4 +16,10 @@ export interface StockDetail {
   pctChange?: number;
   sector?: string;
   industry?: string;
+}
+
+export interface GainerLoser {
+  ticker: string;
+  name: string;
+  change: number;
 }

@@ -1,17 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Allocation, StockDetail } from '../interfaces/portfolio';
-
-export interface GainerLoser {
-  ticker: string;
-  name: string;
-  change: number;
-}
-
-export interface ValueAllocation {
-  ticker: string;
-  allocation_percentage: number;
-}
+import {
+  TypeAllocation,
+  StockDetail,
+  ValueAllocation,
+  GainerLoser,
+} from '../interfaces/portfolio';
 
 @Injectable({
   providedIn: 'root',
@@ -29,8 +23,14 @@ export class PortfolioService {
     return this.http.get('/api/portfolio/assets');
   }
 
-  getAssetAllocation() {
-    return this.http.get<Allocation[]>('/api/portfolio/asset_allocation');
+  getTypeAllocation() {
+    return this.http.get<TypeAllocation[]>('/api/portfolio/asset_allocation');
+  }
+
+  getValueAllocation() {
+    return this.http.get<ValueAllocation[]>(
+      '/api/portfolio/asset_value_allocation'
+    );
   }
 
   buyAsset(payload: { ticker: string; asset_type: string; quantity: number }) {
@@ -58,12 +58,6 @@ export class PortfolioService {
   getGainersLosers() {
     return this.http.get<{ gainers: GainerLoser[]; losers: GainerLoser[] }>(
       '/api/portfolio/gainers-losers'
-    );
-  }
-
-  getValueAllocation() {
-    return this.http.get<ValueAllocation[]>(
-      '/api/portfolio/asset_value_allocation'
     );
   }
 

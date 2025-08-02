@@ -26,7 +26,8 @@ def fetch_assets():
     except Exception as e:
         print(f"Error fetching assets: {e}")
         return []
-    
+
+
 @portfolio_bp.route("/recent_orders", methods=["GET"])
 def get_recent_orders():
     try:

@@ -3,7 +3,7 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'portfolio-table',
+  selector: 'app-portfolio-table',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './portfolio-table.component.html',

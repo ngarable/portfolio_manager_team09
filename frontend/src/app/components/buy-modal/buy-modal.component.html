@@ -1,0 +1,44 @@
+<div class="modal-backdrop" *ngIf="show">
+  <div class="modal">
+    <h2 class="modal__title">Buy New Asset</h2>
+    <form (ngSubmit)="onConfirm()" #buyForm="ngForm" class="modal__form">
+      <label>
+        Ticker
+        <input name="ticker" required [(ngModel)]="ticker" />
+      </label>
+      <label>
+        Type
+        <input name="asset_type" required [(ngModel)]="asset_type" />
+      </label>
+      <label>
+        Quantity
+        <input name="quantity" type="number" required [(ngModel)]="quantity" />
+      </label>
+      <div class="modal__buttons">
+        <button type="submit" [disabled]="buyForm.invalid">Confirm</button>
+        <button type="button" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+    <h3 class="modal__subtitle">Available Stocks</h3>
+    <ul class="modal__stock-list">
+      <li *ngFor="let stock of availableStocks" class="modal__stock-item">
+        <button
+          type="button"
+          class="modal__stock-btn"
+          (click)="selectTicker(stock.ticker)"
+        >
+          {{ stock.ticker }} — {{ stock.shortName || "N/A" }}
+        </button>
+        <div class="modal__stock-info">
+          <p>Price : {{ stock.marketPrice | number : "1.2-2" }}$</p>
+          <p>
+            Now vs previous close :
+            {{ stock.pctChange != null ? stock.pctChange + "%" : "N/A" }}
+          </p>
+          <p>Sector : {{ stock.sector || "N/A" }}</p>
+          <p>Industry : {{ stock.industry || "N/A" }}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
