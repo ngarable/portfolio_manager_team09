@@ -118,10 +118,10 @@ def get_portfolio_value():
 def calculate_portfolio_value():
     assets = portfolioService.get_assets()
     total_value = 0
-
+    
     for asset in assets:
         ticker = asset[0]
-        quantity = float(asset[2])
+        quantity = float(asset[3])
         price = yfinanceService.getMarketPrice(ticker)
         if price is not None:
             total_value += quantity * price
