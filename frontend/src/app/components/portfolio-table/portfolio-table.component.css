@@ -26,7 +26,7 @@
 
 .dashboard-table {
   width: 100%;
-  max-width: 800px;
+  width: 800px;
   margin: 0 auto;
   border-collapse: collapse;
   font-family: "Segoe UI", sans-serif;
@@ -81,7 +81,8 @@
   text-align: center;
 }
 .dashboard-table tbody {
-  overflow-y: auto;
+  max-height: 160px;
+  overflow-y: scroll;
   flex: 1;
   display: block;
 }

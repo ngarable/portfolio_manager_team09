@@ -1,15 +1,22 @@
-<app-balance></app-balance>
+<div class="wrapper">
+  <div class="app-balance">
+    <app-balance></app-balance>
 
-<div class="buy-btn-center">
-  <button class="dashboard__buy-btn" (click)="openDeposit()">DEPOSIT</button>
-  <button class="dashboard__buy-btn" (click)="openBuy()">BUY</button>
-</div>
+    <div class="buy-btn-center">
+      <button class="dashboard__buy-btn" (click)="openDeposit()">
+        DEPOSIT
+      </button>
+      <button class="dashboard__buy-btn" (click)="openBuy()">BUY</button>
 
-<app-deposit-modal (deposited)="handleDeposit($event)"></app-deposit-modal>
+      <app-deposit-modal
+        (deposited)="handleDeposit($event)"
+      ></app-deposit-modal>
 
-<app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
-
-<div class="dashboard-content">
-  <app-assets-charts #charts></app-assets-charts>
-  <app-portfolio-table #table></app-portfolio-table>
+      <app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
+    </div>
+  </div>
+  <div class="dashboard-content">
+    <app-assets-charts #charts></app-assets-charts>
+    <app-portfolio-table #table></app-portfolio-table>
+  </div>
 </div>

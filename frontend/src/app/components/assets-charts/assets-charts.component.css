@@ -1,6 +1,6 @@
 .charts-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 22px;
   align-items: center;
   margin: 1.5rem 0;
