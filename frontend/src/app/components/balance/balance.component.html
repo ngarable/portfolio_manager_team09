@@ -1,8 +1,4 @@
 <div *ngIf="snapshot" class="balance-card">
-  <div class="balance-card__header">
-    <span class="balance-card__title">Portfolio Snapshot</span>
-  </div>
-
   <div class="balance-card__value">
     {{ snapshot.net_worth | number : "1.2-2" }} $
   </div>
@@ -13,12 +9,15 @@
 
   <div style="width: 100%; font-size: 0.95rem; color: #333">
     <p>
-      <strong>Total Invested:</strong>
+      <strong>Total invested :</strong>
       {{ snapshot.total_invested_value | number : "1.2-2" }} $
     </p>
     <p>
-      <strong>Cash Balance:</strong>
+      <strong>Cash balance :</strong>
       {{ snapshot.cash_balance | number : "1.2-2" }} $
     </p>
   </div>
+
+  <!-- Line Chart -->
+  <canvas #netWorthChart></canvas>
 </div>

@@ -73,4 +73,10 @@ export class PortfolioService {
       net_worth: number;
     }>('/api/portfolio/snapshot/latest');
   }
+
+  getSnapshotHistory() {
+    return this.http.get<{ date: string; net_worth: number }[]>(
+      '/api/portfolio/snapshot/history'
+    );
+  }
 }
