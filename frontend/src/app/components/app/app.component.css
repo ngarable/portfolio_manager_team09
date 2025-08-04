@@ -18,3 +18,13 @@
 .dashboard__buy-btn:hover {
   background-color: #c3eaf7;
 }
+
+.dashboard-content {
+  display: flex;
+  align-items: stretch;
+}
+
+.dashboard-content > * {
+  flex: 1;
+  min-width: 0;
+}

@@ -81,8 +81,8 @@
   text-align: center;
 }
 .dashboard-table tbody {
-  overflow-y: scroll;
-  height: 200px;
+  overflow-y: auto;
+  flex: 1;
   display: block;
 }
 
