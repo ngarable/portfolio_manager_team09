@@ -10,6 +10,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { PortfolioService } from '../../services/portfolio.service';
+import { from } from 'rxjs';
 
 Chart.register(...registerables);
 

@@ -93,3 +93,26 @@
 }
 
 /*  */
+.table-container {
+  position: relative;
+  min-height: 400px; /* adjust based on your table height */
+  width: 100%;
+}
+
+.fade-table {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(10px);
+}
+
+.fade-table.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  z-index: 1;
+}

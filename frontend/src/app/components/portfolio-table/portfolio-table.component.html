@@ -20,73 +20,90 @@
 </div>
 
 <!-- PORTFOLIO TABLE -->
-<table *ngIf="activeTab === 'portfolio'" class="dashboard-table">
-  <thead>
-    <tr>
-      <th>SYMBOL</th>
-      <th>TYPE</th>
-      <th>QUANTITY</th>
-      <th>PNL (%)</th>
-      <th>PNL ($)</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let a of assets">
-      <td>{{ a.ticker }}</td>
-      <td>{{ a.asset_type | titlecase }}</td>
-      <td>{{ a.quantity }}</td>
-      <td
-        [ngClass]="{
-          buy: a.pnl_percentage > 0,
-          sell: a.pnl_percentage < 0
-        }"
-      >
-        {{ a.pnl_percentage + "%" }}
-      </td>
+<div class="table-container">
+  <table
+    class="dashboard-table fade-table"
+    [ngClass]="{
+      active: activeTab === 'portfolio',
+      hidden: activeTab !== 'portfolio'
+    }"
+  >
+    <thead>
+      <tr>
+        <th>SYMBOL</th>
+        <th>TYPE</th>
+        <th>QUANTITY</th>
+        <th>PNL (%)</th>
+        <th>PNL ($)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of assets">
+        <td>{{ a.ticker }}</td>
+        <td>{{ a.asset_type | titlecase }}</td>
+        <td>{{ a.quantity }}</td>
+        <td
+          [ngClass]="{
+            buy: a.pnl_percentage > 0,
+            sell: a.pnl_percentage < 0
+          }"
+        >
+          {{ a.pnl_percentage + "%" }}
+        </td>
 
-      <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
-        {{ a.pnl + "$" }}
-      </td>
-      <td>
-        <button class="sell-btn" (click)="openSellModal(a.ticker)">SELL</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
+          {{ a.pnl + "$" }}
+        </td>
+        <td>
+          <button class="sell-btn" (click)="openSellModal(a.ticker)">
+            SELL
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-<app-sell-modal
-  [ticker]="selectedTicker"
-  [visible]="modalVisible"
-  (close)="closeModal()"
->
-</app-sell-modal>
+  <app-sell-modal
+    [ticker]="selectedTicker"
+    [visible]="modalVisible"
+    (close)="closeModal()"
+  >
+  </app-sell-modal>
 
-<!-- RECENT ORDERS TABLE -->
-<table *ngIf="activeTab === 'orders'" class="dashboard-table">
-  <thead>
-    <tr>
-      <th>DATE</th>
-      <th>TICKER</th>
-      <th>TYPE</th>
-      <th>QUANTITY</th>
-      <th>TOTAL PRICE</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let o of orders">
-      <td>{{ o.date }}</td>
-      <td>{{ o.ticker }}</td>
-      <td [ngClass]="{ buy: o.type === 'BUY', sell: o.type === 'SELL' }">
-        {{ o.type }}
-      </td>
-      <td>{{ o.quantity }}</td>
-      <td>
-        {{
-          (o.type === "SELL" ? "+" : "-") + o.price * o.quantity
-            | number : "1.2-2"
-        }}$
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <!-- RECENT ORDERS TABLE -->
+
+  <table
+    class="dashboard-table fade-table"
+    [ngClass]="{
+      active: activeTab === 'orders',
+      hidden: activeTab !== 'orders'
+    }"
+  >
+    <thead>
+      <tr>
+        <th>DATE</th>
+        <th>TICKER</th>
+        <th>TYPE</th>
+        <th>QUANTITY</th>
+        <th>TOTAL PRICE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of orders">
+        <td>{{ o.date }}</td>
+        <td>{{ o.ticker }}</td>
+        <td [ngClass]="{ buy: o.type === 'BUY', sell: o.type === 'SELL' }">
+          {{ o.type }}
+        </td>
+        <td>{{ o.quantity }}</td>
+        <td>
+          {{
+            (o.type === "SELL" ? "+" : "-") + o.price * o.quantity
+              | number : "1.2-2"
+          }}$
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
