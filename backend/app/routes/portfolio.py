@@ -2,6 +2,8 @@ import traceback
 from flask import Blueprint, jsonify, request
 from app.services import portfolioService
 from app.services import yfinanceService
+from collections import defaultdict
+from decimal import Decimal
 
 portfolio_bp = Blueprint('portfolio', __name__)
 
@@ -46,6 +48,82 @@ def get_assets():
             return jsonify({"message": "No current assets found"}), 404
 
         return jsonify(assets), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@portfolio_bp.route("/pnl_by_asset", methods=["GET"])
+def get_pnl_by_asset():
+    try:
+        assets = fetch_assets()
+        if not assets:
+            return jsonify({"message": "No current assets found"}), 404
+
+        pnl_data = []
+
+        for asset in assets:
+            ticker = asset['ticker']
+            asset_type = asset['asset_type']
+            positions = portfolioService.get_remaining_asset_batches(ticker)
+
+            for position in positions:
+                quantity = position['remaining_quantity']
+                buy_price = position['buy_price']
+                current_price = yfinanceService.getMarketPrice(ticker)
+
+                if current_price is None:
+                    return jsonify({"error": f"Market price not available for {ticker}"}), 500
+
+                total_invested = float(quantity) * float(buy_price)
+                current_value = float(quantity) * float(current_price)
+                pnl = current_value - total_invested
+                pnl_percentage = (pnl / total_invested * 100) if total_invested != 0 else 0
+
+                pnl_data.append({
+                    "ticker": ticker,
+                    "asset_type": asset_type,
+                    "quantity": quantity,
+                    "buy_price": buy_price,
+                    "current_price": current_price,
+                    "total_invested": round(total_invested, 2),
+                    "current_value": round(current_value, 2),
+                    "pnl": round(pnl, 2),
+                    "pnl_percentage": round(pnl_percentage, 2)
+                })
+
+        # Aggregate by ticker
+        agg = defaultdict(lambda: {
+            "quantity": 0,
+            "total_invested": Decimal("0"),
+            "current_value": Decimal("0"),
+            "pnl": Decimal("0"),
+            "asset_type": None
+        })
+
+        for row in pnl_data:
+            ticker = row["ticker"]
+            agg[ticker]["quantity"] += row["quantity"]
+            agg[ticker]["total_invested"] += Decimal(str(row["total_invested"]))
+            agg[ticker]["current_value"] += Decimal(str(row["current_value"]))
+            agg[ticker]["pnl"] += Decimal(str(row["pnl"]))
+            agg[ticker]["asset_type"] = row["asset_type"]
+
+        result = []
+        for ticker, values in agg.items():
+            total_invested = values["total_invested"]
+            pnl = values["pnl"]
+            pnl_percentage = (pnl / total_invested * Decimal("100")) if total_invested != 0 else Decimal("0")
+
+            result.append({
+                "ticker": ticker,
+                "asset_type": values["asset_type"],
+                "quantity": values["quantity"],
+                "total_invested": float(round(total_invested, 2)),
+                "current_value": float(round(values["current_value"], 2)),
+                "pnl": float(round(pnl, 2)),
+                "pnl_percentage": float(round(pnl_percentage, 2))
+            })
+
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -118,7 +196,7 @@ def get_portfolio_value():
 def calculate_portfolio_value():
     assets = portfolioService.get_assets()
     total_value = 0
-    
+
     for asset in assets:
         ticker = asset[0]
         quantity = float(asset[3])

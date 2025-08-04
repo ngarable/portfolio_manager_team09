@@ -36,7 +36,7 @@ export class PortfolioTableComponent implements OnInit {
   }
 
   loadAssets() {
-    this.portfolioService.getAssets().subscribe({
+    this.portfolioService.getPnlByAsset().subscribe({
       next: (data: any) => (this.assets = data),
       error: (err) => console.error('API error:', err),
     });

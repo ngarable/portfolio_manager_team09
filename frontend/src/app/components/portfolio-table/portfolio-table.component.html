@@ -26,8 +26,8 @@
       <th>SYMBOL</th>
       <th>TYPE</th>
       <th>QUANTITY</th>
-      <th>RETURNS %</th>
-      <th>RETURNS $</th>
+      <th>PNL (%)</th>
+      <th>PNL ($)</th>
       <th></th>
     </tr>
   </thead>
@@ -36,8 +36,18 @@
       <td>{{ a.ticker }}</td>
       <td>{{ a.asset_type | titlecase }}</td>
       <td>{{ a.quantity }}</td>
-      <td>12%</td>
-      <td>12$</td>
+      <td
+        [ngClass]="{
+          buy: a.pnl_percentage > 0,
+          sell: a.pnl_percentage < 0
+        }"
+      >
+        {{ a.pnl_percentage + "%" }}
+      </td>
+
+      <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
+        {{ a.pnl + "$" }}
+      </td>
       <td>
         <button class="sell-btn" (click)="openSellModal(a.ticker)">SELL</button>
       </td>
