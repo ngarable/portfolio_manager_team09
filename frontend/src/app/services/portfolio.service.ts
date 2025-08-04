@@ -23,6 +23,10 @@ export class PortfolioService {
     return this.http.get('/api/portfolio/assets');
   }
 
+  getPnlByAsset() {
+    return this.http.get('/api/portfolio/pnl_by_asset');
+  }
+
   getTypeAllocation() {
     return this.http.get<TypeAllocation[]>('/api/portfolio/asset_allocation');
   }
