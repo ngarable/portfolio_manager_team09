@@ -1,8 +1,11 @@
 <app-balance></app-balance>
 
 <div class="buy-btn-center">
+  <button class="dashboard__buy-btn" (click)="openDeposit()">DEPOSIT</button>
   <button class="dashboard__buy-btn" (click)="openBuy()">BUY</button>
 </div>
+
+<app-deposit-modal (deposited)="handleDeposit($event)"></app-deposit-modal>
 
 <app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
 
