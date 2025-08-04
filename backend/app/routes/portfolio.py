@@ -281,3 +281,15 @@ def get_stock_details(ticker):
         return jsonify({"error": f"No data for ticker {ticker}"}), 404
 
     return jsonify(details), 200
+
+
+@portfolio_bp.route("/snapshot/latest", methods=["GET"])
+def get_latest_portfolio_snapshot():
+    try:
+        snapshot = portfolioService.get_latest_snapshot()
+        if not snapshot:
+            return jsonify({"message": "No snapshots found"}), 404
+
+        return jsonify(snapshot), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

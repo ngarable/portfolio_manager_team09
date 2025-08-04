@@ -1,8 +1,33 @@
-<div class="balance-card">
+<!-- <div class="balance-card">
   <div class="balance-card__header">
     <span class="balance-card__title">Available Balance</span>
   </div>
   <div class="balance-card__value">
     {{ currentBalance }}$
+  </div>
+</div> -->
+
+<div *ngIf="snapshot" class="balance-card">
+  <div class="balance-card__header">
+    <span class="balance-card__title">Portfolio Snapshot</span>
+  </div>
+
+  <div class="balance-card__value">
+    {{ snapshot.net_worth | number : "1.2-2" }} $
+  </div>
+
+  <div style="font-size: 0.9rem; color: #666; margin-bottom: 12px">
+    as of {{ snapshot.date }}
+  </div>
+
+  <div style="width: 100%; font-size: 0.95rem; color: #333">
+    <p>
+      <strong>Total Invested:</strong>
+      {{ snapshot.total_invested_value | number : "1.2-2" }} $
+    </p>
+    <p>
+      <strong>Cash Balance:</strong>
+      {{ snapshot.cash_balance | number : "1.2-2" }} $
+    </p>
   </div>
 </div>

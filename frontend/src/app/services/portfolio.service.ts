@@ -64,4 +64,13 @@ export class PortfolioService {
   getRecentOrders() {
     return this.http.get('/api/portfolio/recent_orders');
   }
+
+  getLatestSnapshot() {
+    return this.http.get<{
+      date: string;
+      total_invested_value: number;
+      cash_balance: number;
+      net_worth: number;
+    }>('/api/portfolio/snapshot/latest');
+  }
 }

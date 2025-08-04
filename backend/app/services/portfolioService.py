@@ -141,3 +141,27 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
         "buy_price":          buy_price,
         "remaining_quantity": quantity,
     }
+
+
+def get_latest_snapshot():
+    cursor = mysql.connection.cursor()
+    query = """
+        SELECT date, total_invested_value, cash_balance, net_worth
+        FROM snapshots
+        ORDER BY date DESC
+        LIMIT 1
+    """
+    cursor.execute(query)
+    row = cursor.fetchone()
+    cursor.close()
+
+    if not row:
+        return None
+
+    date_str = row[0].strftime('%Y-%m-%d')
+    return {
+        "date": date_str,
+        "total_invested_value": float(row[1]),
+        "cash_balance": float(row[2]),
+        "net_worth": float(row[3])
+    }
