@@ -1,0 +1,26 @@
+<div class="modal-backdrop" *ngIf="isOpen">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2 class="modal__title">Deposit Cash</h2>
+
+    <form class="modal__form" (ngSubmit)="submitDeposit()">
+      <label for="amount">
+        Amount ($) :
+        <input
+          id="amount"
+          type="number"
+          [(ngModel)]="amount"
+          name="amount"
+          placeholder="Enter amount"
+          required
+        />
+      </label>
+
+      <div class="modal__buttons">
+        <button type="button" (click)="close()">Cancel</button>
+        <button type="submit" [disabled]="isLoading">
+          {{ isLoading ? "Depositing..." : "Deposit" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
