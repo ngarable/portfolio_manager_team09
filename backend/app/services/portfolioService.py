@@ -244,3 +244,23 @@ def update_snapshot():
 
     mysql.connection.commit()
     cursor.close()
+
+
+def get_snapshot_history():
+    cursor = mysql.connection.cursor()
+    query = """
+        SELECT date, net_worth
+        FROM snapshots
+        ORDER BY date ASC
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    return [
+        {
+            "date": row[0].strftime('%Y-%m-%d'),
+            "net_worth": float(row[1])
+        }
+        for row in rows
+    ]

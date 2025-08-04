@@ -118,7 +118,7 @@ def get_portfolio_value():
 def calculate_portfolio_value():
     assets = portfolioService.get_assets()
     total_value = 0
-    
+
     for asset in assets:
         ticker = asset[0]
         quantity = float(asset[3])
@@ -302,5 +302,16 @@ def get_latest_portfolio_snapshot():
             return jsonify({"message": "No snapshots found"}), 404
 
         return jsonify(snapshot), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@portfolio_bp.route("/snapshot/history", methods=["GET"])
+def get_snapshot_history():
+    try:
+        snapshots = portfolioService.get_snapshot_history()
+        if not snapshots:
+            return jsonify({"message": "No snapshot history found"}), 404
+        return jsonify(snapshots), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
