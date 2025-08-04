@@ -14,7 +14,6 @@ import { StockDetail } from '../../interfaces/portfolio';
 export class BuyModalComponent {
   show = false;
   ticker = '';
-  asset_type = '';
   quantity: number | null = null;
   availableTickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA'];
   availableStocks: StockDetail[] = [];
@@ -22,7 +21,6 @@ export class BuyModalComponent {
 
   @Output() purchased = new EventEmitter<{
     ticker: string;
-    asset_type: string;
     quantity: number;
   }>();
 
@@ -49,26 +47,53 @@ export class BuyModalComponent {
 
   resetForm() {
     this.ticker = '';
-    this.asset_type = '';
     this.quantity = null;
+    this.errorMessage = null;
   }
 
   selectTicker(t: string) {
     this.ticker = t;
   }
 
-  onConfirm() {
-    if (!this.ticker || !this.asset_type || this.quantity === null) {
-      this.errorMessage = 'Please fill in all fields.';
-      return;
+  validateInputs(): Promise<boolean> {
+    if (!this.ticker.trim()) {
+      this.errorMessage = 'Ticker is required.';
+      return Promise.resolve(false);
     }
+    if (!this.quantity || this.quantity <= 0) {
+      this.errorMessage = 'Quantity must be greater than zero.';
+      return Promise.resolve(false);
+    }
+
+    // 🔹 Validate ticker exists via backend
+    return new Promise((resolve) => {
+      this.portfolioService.getStockDetails(this.ticker).subscribe({
+        next: (data) => {
+          if (!data || !data.marketPrice) {
+            this.errorMessage = 'Invalid ticker: No market data found.';
+            resolve(false);
+          } else {
+            this.errorMessage = null;
+            resolve(true);
+          }
+        },
+        error: () => {
+          this.errorMessage = 'Invalid ticker: Could not fetch from yfinance.';
+          resolve(false);
+        },
+      });
+    });
+  }
+
+  async onConfirm() {
+    const isValid = await this.validateInputs();
+    if (!isValid) return;
 
     this.portfolioService
       .buyAsset({
         ticker: this.ticker,
-        asset_type: this.asset_type,
-        quantity: this.quantity,
-      })
+        quantity: this.quantity!,
+      } as any)
       .subscribe({
         next: () => {
           this.errorMessage = null;
@@ -78,8 +103,13 @@ export class BuyModalComponent {
         },
         error: (err) => {
           console.error('Error buying asset:', err);
-          this.errorMessage =
-            err.error?.message || 'An unexpected error occurred while buying.';
+          if (err.status === 400 && err.error?.error === 'Insufficient funds') {
+            this.errorMessage = `Not enough funds! Available: $${err.error.available_balance}, Required: $${err.error.required}`;
+          } else {
+            this.errorMessage =
+              err.error?.message ||
+              'An unexpected error occurred while buying.';
+          }
         },
       });
   }

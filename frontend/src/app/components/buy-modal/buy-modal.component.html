@@ -7,18 +7,27 @@
         <input name="ticker" required [(ngModel)]="ticker" />
       </label>
       <label>
-        Type
-        <input name="asset_type" required [(ngModel)]="asset_type" />
-      </label>
-      <label>
         Quantity
-        <input name="quantity" type="number" required [(ngModel)]="quantity" />
+        <input
+          name="quantity"
+          type="number"
+          required
+          min="1"
+          step="1"
+          [(ngModel)]="quantity"
+        />
       </label>
+
+      <span class="modal__error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </span>
+
       <div class="modal__buttons">
-        <button type="submit" [disabled]="buyForm.invalid">Confirm</button>
+        <button type="submit">Confirm</button>
         <button type="button" (click)="onCancel()">Cancel</button>
       </div>
     </form>
+
     <h3 class="modal__subtitle">Available Stocks</h3>
     <ul class="modal__stock-list">
       <li *ngFor="let stock of availableStocks" class="modal__stock-item">

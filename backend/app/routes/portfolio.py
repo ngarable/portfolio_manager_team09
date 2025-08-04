@@ -50,7 +50,8 @@ def get_assets():
         return jsonify(assets), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
 @portfolio_bp.route("/pnl_by_asset", methods=["GET"])
 def get_pnl_by_asset():
     try:
@@ -76,7 +77,8 @@ def get_pnl_by_asset():
                 total_invested = float(quantity) * float(buy_price)
                 current_value = float(quantity) * float(current_price)
                 pnl = current_value - total_invested
-                pnl_percentage = (pnl / total_invested * 100) if total_invested != 0 else 0
+                pnl_percentage = (pnl / total_invested *
+                                  100) if total_invested != 0 else 0
 
                 pnl_data.append({
                     "ticker": ticker,
@@ -102,7 +104,8 @@ def get_pnl_by_asset():
         for row in pnl_data:
             ticker = row["ticker"]
             agg[ticker]["quantity"] += row["quantity"]
-            agg[ticker]["total_invested"] += Decimal(str(row["total_invested"]))
+            agg[ticker]["total_invested"] += Decimal(
+                str(row["total_invested"]))
             agg[ticker]["current_value"] += Decimal(str(row["current_value"]))
             agg[ticker]["pnl"] += Decimal(str(row["pnl"]))
             agg[ticker]["asset_type"] = row["asset_type"]
@@ -111,7 +114,8 @@ def get_pnl_by_asset():
         for ticker, values in agg.items():
             total_invested = values["total_invested"]
             pnl = values["pnl"]
-            pnl_percentage = (pnl / total_invested * Decimal("100")) if total_invested != 0 else Decimal("0")
+            pnl_percentage = (pnl / total_invested * Decimal("100")
+                              ) if total_invested != 0 else Decimal("0")
 
             result.append({
                 "ticker": ticker,
@@ -132,20 +136,22 @@ def get_pnl_by_asset():
 def buy_asset():
     payload = request.get_json() or {}
     ticker = payload.get("ticker")
-    asset_type = payload.get("asset_type")
     quantity = payload.get("quantity")
 
-    if not all([ticker, asset_type, quantity]):
-        return jsonify(
-            {"error": "Fields 'ticker', 'asset_type' and 'quantity' are required"}
-        ), 400
+    if not ticker or not quantity:
+        return jsonify({"error": "Fields 'ticker' and 'quantity' are required"}), 400
+
+    asset_type = yfinanceService.getAssetType(ticker)
+    if not asset_type:
+        return jsonify({"error": f"Could not fetch asset type for {ticker}"}), 500
 
     price = yfinanceService.getMarketPrice(ticker)
     if price is None:
         return jsonify({"error": f"Could not fetch price for {ticker}"}), 500
-    total_cost = price * quantity
 
+    total_cost = price * quantity
     current_balance = portfolioService.get_cash_balance()
+
     if current_balance < total_cost:
         return jsonify({
             "error": "Insufficient funds",
@@ -155,7 +161,6 @@ def buy_asset():
 
     try:
         order = portfolioService.buy_asset(ticker, asset_type, quantity)
-
         portfolioService.set_cash_balance(current_balance - total_cost)
         portfolioService.update_snapshot()
         snapshot = portfolioService.get_latest_snapshot()

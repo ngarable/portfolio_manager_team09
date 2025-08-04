@@ -148,7 +148,8 @@ def get_cash_balance():
     cursor.execute("""
         SELECT cash_balance
         FROM snapshots
-        WHERE date = %s
+        WHERE date <= %s
+        ORDER BY date DESC
         LIMIT 1
     """, (date.today(),))
     row = cursor.fetchone()

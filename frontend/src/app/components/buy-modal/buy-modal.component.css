@@ -95,3 +95,8 @@
   color: #555;
   line-height: 1.4;
 }
+.modal__error {
+  color: red;
+  margin: 0.5rem 0;
+  font-size: 12px;
+}

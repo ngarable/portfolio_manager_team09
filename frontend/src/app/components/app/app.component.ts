@@ -42,11 +42,7 @@ export class AppComponent {
     this.charts.reloadAllocs();
   }
 
-  handlePurchase(evt: {
-    ticker: string;
-    asset_type: string;
-    quantity: number;
-  }) {
+  handlePurchase(evt: { ticker: string; quantity: number }) {
     this.portfolioService.buyAsset(evt).subscribe({
       next: () => {
         this.table.loadAssets();

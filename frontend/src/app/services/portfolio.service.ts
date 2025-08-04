@@ -37,7 +37,7 @@ export class PortfolioService {
     );
   }
 
-  buyAsset(payload: { ticker: string; asset_type: string; quantity: number }) {
+  buyAsset(payload: { ticker: string; quantity: number; asset_type?: string }) {
     return this.http.post('/api/portfolio/assets/buy', payload);
   }
 
