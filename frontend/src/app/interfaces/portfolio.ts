@@ -16,6 +16,7 @@ export interface StockDetail {
   pctChange?: number;
   sector?: string;
   industry?: string;
+  assetType?: string;
 }
 
 export interface GainerLoser {

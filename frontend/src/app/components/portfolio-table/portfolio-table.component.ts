@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { PortfolioService } from '../../services/portfolio.service';
 import { CommonModule } from '@angular/common';
+import { SellModalComponent } from '../sell-modal/sell-modal.component';
 
 @Component({
   selector: 'app-portfolio-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SellModalComponent],
   templateUrl: './portfolio-table.component.html',
   styleUrl: './portfolio-table.component.css',
 })
@@ -14,6 +15,9 @@ export class PortfolioTableComponent implements OnInit {
   orders: any[] = [];
 
   activeTab = 'portfolio';
+
+  selectedTicker: string = '';
+  modalVisible = false;
 
   constructor(private portfolioService: PortfolioService) {}
 
@@ -39,7 +43,12 @@ export class PortfolioTableComponent implements OnInit {
   }
 
   openSellModal(ticker: string) {
-    // Logic to open sell modal can be added here
-    alert(`Sell modal for ${ticker} not implemented yet.`);
+    this.selectedTicker = ticker;
+    this.modalVisible = true;
+  }
+
+  closeModal() {
+    this.modalVisible = false;
+    this.selectedTicker = '';
   }
 }

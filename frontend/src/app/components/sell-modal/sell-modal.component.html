@@ -1,0 +1,46 @@
+<!-- <div class="modal-backdrop" *ngIf="visible">
+  <div class="modal-content">
+    <h2>Sell {{ ticker }}</h2>
+    <p>Market price: {{ marketPrice + "$" }}?</p>
+    <button (click)="onClose()">Cancel</button>
+    <button (click)="confirmSell()">Confirm Sell</button>
+  </div>
+</div> -->
+
+<div class="modal-backdrop" *ngIf="visible">
+  <div class="modal">
+    <h2 class="modal__title">Sell {{ ticker }}</h2>
+    <form class="modal__form">
+      <label>
+        Ticker
+        <input name="ticker" required readonly value="{{ ticker }}" />
+      </label>
+      <label>
+        Type
+        <input name="asset_type" required readonly value="{{ assetType }}" />
+      </label>
+      <label>
+        Quantity
+        <input
+          #quantityInput
+          name="quantity"
+          type="number"
+          required
+          min="1"
+          step="1"
+        />
+      </label>
+      <span class="modal__error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </span>
+      <div class="modal__buttons">
+        <button type="button" class="cancelBtn" (click)="onClose()">
+          Cancel
+        </button>
+        <button type="button" class="sellBtn" (click)="confirmSell()">
+          Confirm Sell
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

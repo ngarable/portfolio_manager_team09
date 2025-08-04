@@ -45,6 +45,13 @@
   </tbody>
 </table>
 
+<app-sell-modal
+  [ticker]="selectedTicker"
+  [visible]="modalVisible"
+  (close)="closeModal()"
+>
+</app-sell-modal>
+
 <!-- RECENT ORDERS TABLE -->
 <table *ngIf="activeTab === 'orders'" class="dashboard-table">
   <thead>
