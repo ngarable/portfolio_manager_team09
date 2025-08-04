@@ -5,8 +5,6 @@ from app.services import yfinanceService
 
 portfolio_bp = Blueprint('portfolio', __name__)
 
-available_balance = {"value": 10000}
-
 
 def fetch_assets():
     try:
@@ -69,20 +67,25 @@ def buy_asset():
         return jsonify({"error": f"Could not fetch price for {ticker}"}), 500
     total_cost = price * quantity
 
-    if available_balance["value"] < total_cost:
+    current_balance = portfolioService.get_cash_balance()
+    if current_balance < total_cost:
         return jsonify({
             "error": "Insufficient funds",
-            "available_balance": available_balance["value"],
+            "available_balance": current_balance,
             "required": total_cost
         }), 400
 
     try:
         order = portfolioService.buy_asset(ticker, asset_type, quantity)
-        available_balance["value"] -= total_cost
+
+        portfolioService.set_cash_balance(current_balance - total_cost)
+        portfolioService.update_snapshot()
+        snapshot = portfolioService.get_latest_snapshot()
+
         return jsonify({
             "message": "Buy order placed successfully",
             "order": order,
-            "available_balance": available_balance["value"]
+            "snapshot": snapshot
         }), 201
 
     except Exception as e:
@@ -98,8 +101,6 @@ def get_asset_allocation():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-# Blessing..Example use: http://localhost:5000/api/portfolio/portfolio_value
 
 
 @portfolio_bp.route("/portfolio_value", methods=["GET"])
@@ -211,11 +212,18 @@ def sell_asset():
     else:
         return jsonify({"message": f"Asset {ticker_to_sell} not found"}), 400
 
-    available_balance['value'] += total_profit
     portfolioService.sell_asset(
         ticker_to_sell, quantity_to_sell, market_price, asset['asset_type'])
 
-    return jsonify({"message": f"Sold {quantity_to_sell} of {ticker_to_sell}", "profit": total_profit}), 200
+    current_balance = portfolioService.get_cash_balance()
+    portfolioService.set_cash_balance(current_balance + total_profit)
+    portfolioService.update_snapshot()
+
+    return jsonify({
+        "message": f"Sold {quantity_to_sell} of {ticker_to_sell}",
+        "profit": total_profit,
+        "available_balance": portfolioService.get_cash_balance()
+    }), 200
 
 
 @portfolio_bp.route("/asset_value_allocation", methods=["GET"])
@@ -262,16 +270,19 @@ def deposit():
     if not amount or float(amount) <= 0:
         return jsonify({"error": "Invalid deposit amount"}), 400
 
-    available_balance["value"] += float(amount)
+    current_balance = portfolioService.get_cash_balance()
+    portfolioService.set_cash_balance(current_balance + float(amount))
+    portfolioService.update_snapshot()
     return jsonify({
         "message": "Deposit successful",
-        "available_balance": available_balance["value"]
+        "available_balance": portfolioService.get_cash_balance()
     }), 200
 
 
 @portfolio_bp.route("/balance", methods=["GET"])
 def get_balance():
-    return jsonify({"available_balance": available_balance["value"]}), 200
+    balance = portfolioService.get_cash_balance()
+    return jsonify({"available_balance": balance}), 200
 
 
 @portfolio_bp.route("/stock/<string:ticker>", methods=["GET"])

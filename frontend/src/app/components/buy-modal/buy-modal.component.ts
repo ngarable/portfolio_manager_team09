@@ -18,6 +18,7 @@ export class BuyModalComponent {
   quantity: number | null = null;
   availableTickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA'];
   availableStocks: StockDetail[] = [];
+  errorMessage: string | null = null;
 
   @Output() purchased = new EventEmitter<{
     ticker: string;
@@ -58,15 +59,29 @@ export class BuyModalComponent {
 
   onConfirm() {
     if (!this.ticker || !this.asset_type || this.quantity === null) {
+      this.errorMessage = 'Please fill in all fields.';
       return;
     }
-    this.purchased.emit({
-      ticker: this.ticker,
-      asset_type: this.asset_type,
-      quantity: this.quantity,
-    });
-    this.show = false;
-    this.resetForm();
+
+    this.portfolioService
+      .buyAsset({
+        ticker: this.ticker,
+        asset_type: this.asset_type,
+        quantity: this.quantity,
+      })
+      .subscribe({
+        next: () => {
+          this.errorMessage = null;
+          this.show = false;
+          alert(`Bought ${this.quantity} share(s) of ${this.ticker}`);
+          window.location.reload();
+        },
+        error: (err) => {
+          console.error('Error buying asset:', err);
+          this.errorMessage =
+            err.error?.message || 'An unexpected error occurred while buying.';
+        },
+      });
   }
 
   onCancel() {

@@ -16,17 +16,9 @@ export class BalanceComponent {
   constructor(private portfolioService: PortfolioService) {}
 
   ngOnInit() {
-    // this.loadBalance();
     this.portfolioService.getLatestSnapshot().subscribe({
       next: (res) => (this.snapshot = res),
       error: () => console.warn('Could not load snapshot'),
-    });
-  }
-
-  loadBalance() {
-    this.portfolioService.getBalance().subscribe({
-      next: (res: any) => (this.currentBalance = res.available_balance),
-      error: (_) => console.warn('Could not load balance'),
     });
   }
 }

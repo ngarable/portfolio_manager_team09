@@ -143,6 +143,43 @@ def buy_asset(ticker: str, asset_type: str, quantity: int) -> dict:
     }
 
 
+def get_cash_balance():
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        SELECT cash_balance
+        FROM snapshots
+        WHERE date = %s
+        LIMIT 1
+    """, (date.today(),))
+    row = cursor.fetchone()
+    cursor.close()
+    return float(row[0]) if row else 0.0
+
+
+def set_cash_balance(new_balance):
+    today = date.today()
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT 1 FROM snapshots WHERE date = %s", (today,))
+    exists = cursor.fetchone()
+
+    if exists:
+        cursor.execute("""
+            UPDATE snapshots
+            SET cash_balance = %s,
+                net_worth = total_invested_value + %s
+            WHERE date = %s
+        """, (new_balance, new_balance, today))
+    else:
+        cursor.execute("""
+            INSERT INTO snapshots (date, total_invested_value, cash_balance, net_worth)
+            VALUES (%s, %s, %s, %s)
+        """, (today, 0, new_balance, new_balance))
+
+    mysql.connection.commit()
+    cursor.close()
+
+
 def get_latest_snapshot():
     cursor = mysql.connection.cursor()
     query = """
@@ -165,3 +202,45 @@ def get_latest_snapshot():
         "cash_balance": float(row[2]),
         "net_worth": float(row[3])
     }
+
+
+def update_snapshot():
+    today = date.today()
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        SELECT ticker, SUM(remaining_quantity) AS quantity
+        FROM orders
+        WHERE remaining_quantity > 0
+        GROUP BY ticker
+    """)
+    holdings = cursor.fetchall()
+
+    total_invested_value = 0.0
+    for ticker, quantity in holdings:
+        price = getMarketPrice(ticker) or 0.0
+        total_invested_value += price * float(quantity)
+
+    cash_balance = get_cash_balance()
+
+    net_worth = total_invested_value + cash_balance
+
+    cursor.execute("SELECT 1 FROM snapshots WHERE date = %s", (today,))
+    exists = cursor.fetchone()
+
+    if exists:
+        cursor.execute("""
+            UPDATE snapshots
+            SET total_invested_value = %s,
+                cash_balance = %s,
+                net_worth = %s
+            WHERE date = %s
+        """, (total_invested_value, cash_balance, net_worth, today))
+    else:
+        cursor.execute("""
+            INSERT INTO snapshots (date, total_invested_value, cash_balance, net_worth)
+            VALUES (%s, %s, %s, %s)
+        """, (today, total_invested_value, cash_balance, net_worth))
+
+    mysql.connection.commit()
+    cursor.close()
