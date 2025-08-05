@@ -131,3 +131,29 @@
 .chatbot-input button:hover {
   background-color: #005dc1;
 }
+
+.chat-message.loading {
+  background-color: #f1f1f1;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-style: italic;
+  color: #555;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 3px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

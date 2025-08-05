@@ -409,6 +409,8 @@ def chat_with_portfolio_assistant():
 
     if not user_question:
         return jsonify({"error": "Missing 'question' in request body"}), 400
+    
+    user_question += " Only provide an answer to FINANCIAL-related questions. If not, please answer the following: 'I'm an Financial Advisor powered by AI, I only answer financial-related questions'. However, if the user says 'Hi' or 'Hello', please respond with a friendly greeting, and present yourself as a Financial Advisor AI assistant. You don't have to say Hi back if the user doesn't say Hi first. If it's just a question, answer it directly."
 
     try:
         answer = ask_chatbot(user_question)

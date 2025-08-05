@@ -83,4 +83,10 @@ export class PortfolioService {
       '/api/portfolio/snapshot/history'
     );
   }
+
+  getChatbotResponse(question: string) {
+    return this.http.post<{ answer: string }>('/api/portfolio/chatbot', {
+      question,
+    });
+  }
 }

@@ -4,7 +4,7 @@
 <!-- Chat Window -->
 <div class="chatbot-window" *ngIf="isOpen">
   <div class="chatbot-header">
-    <span>ChatBot</span>
+    <span>Financial Advisor powered by AI</span>
     <button (click)="toggleChat()">✖</button>
   </div>
 
@@ -12,6 +12,11 @@
     <div *ngFor="let msg of messages" class="chat-message">
       <b>{{ msg.from }}:</b> {{ msg.text }}
     </div>
+  </div>
+
+  <div *ngIf="loading" class="chat-message loading">
+    <b>AI:</b>
+    <span class="spinner"></span> Thinking...
   </div>
 
   <div class="chatbot-input">
