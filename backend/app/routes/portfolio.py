@@ -5,6 +5,8 @@ from app.services import yfinanceService
 from collections import defaultdict
 from decimal import Decimal
 
+from app.services.chatbotService import ask_chatbot
+
 portfolio_bp = Blueprint('portfolio', __name__)
 
 
@@ -396,5 +398,20 @@ def get_snapshot_history():
         if not snapshots:
             return jsonify({"message": "No snapshot history found"}), 404
         return jsonify(snapshots), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@portfolio_bp.route("/chatbot", methods=["POST"])
+def chat_with_portfolio_assistant():
+    data = request.get_json()
+    user_question = data.get("question")
+
+    if not user_question:
+        return jsonify({"error": "Missing 'question' in request body"}), 400
+
+    try:
+        answer = ask_chatbot(user_question)
+        return jsonify({"answer": answer}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
