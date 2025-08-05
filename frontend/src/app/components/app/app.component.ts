@@ -6,6 +6,7 @@ import { PortfolioTableComponent } from '../portfolio-table/portfolio-table.comp
 import { PortfolioService } from '../../services/portfolio.service';
 import { BalanceComponent } from '../balance/balance.component';
 import { DepositModalComponent } from '../deposit-modal/deposit-modal.component';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ import { DepositModalComponent } from '../deposit-modal/deposit-modal.component'
     PortfolioTableComponent,
     BalanceComponent,
     DepositModalComponent,
+    ChatbotComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],

@@ -1,5 +1,5 @@
 <div class="wrapper">
-  <div class="app-balance">
+  <div class="half app-balance">
     <app-balance></app-balance>
 
     <div class="buy-btn-center">
@@ -15,8 +15,9 @@
       <app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
     </div>
   </div>
-  <div class="dashboard-content">
+  <div class="half dashboard-content">
     <app-assets-charts #charts></app-assets-charts>
     <app-portfolio-table #table></app-portfolio-table>
   </div>
+  <app-chatbot></app-chatbot>
 </div>
