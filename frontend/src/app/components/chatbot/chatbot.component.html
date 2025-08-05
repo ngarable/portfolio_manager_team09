@@ -10,13 +10,14 @@
 
   <div class="chatbot-messages">
     <div *ngFor="let msg of messages" class="chat-message">
-      <b>{{ msg.from }}:</b> {{ msg.text }}
+      <b>{{ msg.from }}:</b>
+      <div *ngIf="msg.html; else plainText" [innerHTML]="msg.html"></div>
+      <ng-template #plainText>{{ msg.text }}</ng-template>
     </div>
-  </div>
 
-  <div *ngIf="loading" class="chat-message loading">
-    <b>AI:</b>
-    <span class="spinner"></span> Thinking...
+    <div *ngIf="loading" class="chat-message loading">
+      <b>AI:</b> <span class="spinner"></span> Thinking...
+    </div>
   </div>
 
   <div class="chatbot-input">

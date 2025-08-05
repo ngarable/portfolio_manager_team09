@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PortfolioService } from '../../services/portfolio.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 
 @Component({
   selector: 'app-chatbot',
@@ -13,36 +15,41 @@ import { PortfolioService } from '../../services/portfolio.service';
 export class ChatbotComponent {
   isOpen = false;
   newMessage = '';
-  messages: { from: string; text: string }[] = [];
+  loading = false;
 
-  constructor(private portfolioService: PortfolioService) {}
+  messages: { from: string; text: string; html?: SafeHtml }[] = [];
+
+  constructor(
+    private portfolioService: PortfolioService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   toggleChat() {
     this.isOpen = !this.isOpen;
   }
 
-  loading = false;
+  async sendMessage() {
+    const userInput = this.newMessage.trim();
+    if (!userInput) return;
 
-  sendMessage() {
-    if (!this.newMessage.trim()) return;
-
-    const userMessage = this.newMessage;
-    this.messages.push({ from: 'You', text: userMessage });
+    this.messages.push({ from: 'You', text: userInput });
     this.newMessage = '';
+    this.loading = true;
 
-    this.loading = true; // Start loading
-
-    this.portfolioService.getChatbotResponse(userMessage).subscribe({
-      next: (response) => {
-        this.loading = false; // Stop loading
-        this.messages.push({ from: 'AI', text: response.answer });
+    this.portfolioService.getChatbotResponse(userInput).subscribe({
+      next: async (response) => {
+        const raw = response.answer;
+        const parsed = await marked.parse(raw);
+        const html = this.sanitizer.bypassSecurityTrustHtml(parsed);
+        this.messages.push({ from: 'AI', text: raw, html });
+        this.loading = false;
       },
       error: (err) => {
-        this.loading = false; // Stop loading
         this.messages.push({
-          from: 'Bot',
+          from: 'AI',
           text: 'Something went wrong. Please try again.',
         });
+        this.loading = false;
         console.error('Chatbot error:', err);
       },
     });

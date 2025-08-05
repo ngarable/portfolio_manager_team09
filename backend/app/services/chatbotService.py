@@ -1,11 +1,31 @@
 import os
 import openai
 from dotenv import load_dotenv
-
-from app.services import portfolioService
-from app.services import yfinanceService
+from app.services import portfolioService, yfinanceService
 
 load_dotenv()
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+chat_history = [
+    {
+        "role": "system",
+        "content": (
+            "You are a professional AI financial advisor. "
+            "You provide concise, structured, and actionable investment advice based on the user's portfolio, "
+            "market trends, and best financial practices.\n\n"
+            "Respond ONLY to financial questions. If the question is not finance-related, reply: "
+            "'I'm a Financial Advisor powered by AI, and I only answer financial-related questions.'\n\n"
+            "If the user says 'Hi' or 'Hello', greet them and introduce yourself.\n\n"
+            "**Always format your response clearly using Markdown with:**\n"
+            "- Headings (`###`) for sections\n"
+            "- Bullet points for tips\n"
+            "- **Bold** key terms\n"
+            "- Short paragraphs (max 3 sentences each)\n"
+            "- Inline code for values like `$5125.40`\n"
+            "- Keep the answer under 200 words unless deeply technical"
+        )
+    }
+]
 
 
 def get_portfolio_context() -> str:
@@ -35,22 +55,24 @@ def get_portfolio_context() -> str:
 
 
 def ask_chatbot(user_question: str) -> str:
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     context = get_portfolio_context()
 
-    system_prompt = (
-        "You are a financial advisor assistant. You give thoughtful and practical investment advice "
-        "based on the user's current portfolio, best investment practices, market strategies, and recent financial trends. "
-        "If relevant, mention potential risks or better allocation ideas based on the user's holdings."
-    )
+    chat_history.append({
+        "role": "user",
+        "content": f"{context}\n\nUser Question: {user_question}"
+    })
 
     response = client.chat.completions.create(
         model="gpt-4",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"{context}\n\nUser Question: {user_question}"}
-        ],
-        temperature=0.3
+        messages=chat_history,
+        temperature=0.3,
     )
 
-    return response.choices[0].message.content.strip()
+    assistant_reply = response.choices[0].message.content.strip()
+
+    chat_history.append({
+        "role": "assistant",
+        "content": assistant_reply
+    })
+
+    return assistant_reply
