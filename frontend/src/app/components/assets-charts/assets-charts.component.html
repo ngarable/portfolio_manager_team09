@@ -1,33 +1,39 @@
 <div class="charts-container">
+  <!-- Allocation by Type card -->
   <div class="card dashboard-chart">
     <div class="section-title">Allocation by Type</div>
     <div class="dashboard-chart__body">
       <div class="pie-chart" [style.background]="pieGradientType"></div>
-      <ul class="legend">
-        <li *ngFor="let a of typeAlloc; let i = index" class="legend__item">
-          <span
-            class="legend__color"
-            [style.background]="colors[i % colors.length]"
-          ></span>
-          {{ a.asset_type }} — {{ a.percent }}%
-        </li>
-      </ul>
+      <div class="legend-container">
+        <ul class="legend">
+          <li *ngFor="let a of typeAlloc; let i = index" class="legend__item">
+            <span
+              class="legend__color"
+              [style.background]="typeColors[i]"
+            ></span>
+            {{ a.asset_type }} — {{ a.percent }}%
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
+  <!-- Allocation by Value card -->
   <div class="card dashboard-chart">
     <div class="section-title">Allocation by Value</div>
     <div class="dashboard-chart__body">
       <div class="pie-chart" [style.background]="pieGradientValue"></div>
-      <ul class="legend">
-        <li *ngFor="let v of valueAlloc; let i = index" class="legend__item">
-          <span
-            class="legend__color"
-            [style.background]="colors[i % colors.length]"
-          ></span>
-          {{ v.ticker }} — {{ v.allocation_percentage }}%
-        </li>
-      </ul>
+      <div class="legend-container">
+        <ul class="legend">
+          <li *ngFor="let v of valueAlloc; let i = index" class="legend__item">
+            <span
+              class="legend__color"
+              [style.background]="valueColors[i]"
+            ></span>
+            {{ v.ticker }} — {{ v.allocation_percentage }}%
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

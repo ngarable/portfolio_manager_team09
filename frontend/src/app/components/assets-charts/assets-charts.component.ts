@@ -14,10 +14,12 @@ import { TypeAllocation, ValueAllocation } from '../../interfaces/portfolio';
 export class AssetsChartsComponent implements OnInit {
   typeAlloc: TypeAllocation[] = [];
   valueAlloc: ValueAllocation[] = [];
+
   pieGradientType = '';
   pieGradientValue = '';
 
-  public colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0'];
+  typeColors: string[] = [];
+  valueColors: string[] = [];
 
   constructor(private portfolioService: PortfolioService) {}
 
@@ -31,7 +33,8 @@ export class AssetsChartsComponent implements OnInit {
         this.typeAlloc = data;
         this.buildGradient(
           data.map((d) => d.percent),
-          'pieGradientType'
+          'pieGradientType',
+          'typeColors'
         );
       },
       error: (err) => console.error('Type alloc error', err),
@@ -42,25 +45,37 @@ export class AssetsChartsComponent implements OnInit {
         this.valueAlloc = data;
         this.buildGradient(
           data.map((d) => d.allocation_percentage),
-          'pieGradientValue'
+          'pieGradientValue',
+          'valueColors'
         );
       },
       error: (err) => console.error('Value alloc error', err),
     });
   }
 
+  private generateColors(count: number): string[] {
+    return Array.from({ length: count }, (_, i) => {
+      const hue = Math.round((360 * i) / count);
+      return `hsl(${hue}, 60%, 55%)`;
+    });
+  }
+
   private buildGradient(
     percentages: number[],
-    target: 'pieGradientType' | 'pieGradientValue'
+    target: 'pieGradientType' | 'pieGradientValue',
+    colorKey: 'typeColors' | 'valueColors'
   ) {
+    const colors = this.generateColors(percentages.length);
+    this[colorKey] = colors;
+
     let start = 0;
     const stops = percentages.map((pct, i) => {
       const end = start + pct;
-      const color = this.colors[i % this.colors.length];
-      const seg = `${color} ${start}% ${end}%`;
+      const seg = `${colors[i]} ${start}% ${end}%`;
       start = end;
       return seg;
     });
+
     this[target] = `conic-gradient(${stops.join(', ')})`;
   }
 }
