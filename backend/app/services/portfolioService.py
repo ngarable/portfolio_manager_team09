@@ -17,8 +17,7 @@ def get_assets():
 
 def get_recent_orders():
     sql = """SELECT date, ticker, type, quantity, price FROM portfolio_db.orders
-    ORDER BY id DESC
-    LIMIT 10;"""
+    ORDER BY id DESC;"""
     cursor = mysql.connection.cursor()
     cursor.execute(sql)
     orders = cursor.fetchall()
