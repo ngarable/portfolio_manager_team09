@@ -9,26 +9,21 @@
     <div class="balance-sub">
       <div class="stat">
         <span class="stat-label">Invested</span>
-        <span class="stat-value">
-          {{ snapshot.total_invested_value | number : "1.2-2" }} $
-        </span>
+        <span class="stat-value"
+          >{{ snapshot.total_invested_value | number : "1.2-2" }} $</span
+        >
       </div>
-      <div class="stat">
+      <div class="stat stat-cash">
         <span class="stat-label">Cash</span>
-        <span class="stat-value">
-          {{ snapshot.cash_balance | number : "1.2-2" }} $
-        </span>
+        <span class="stat-value"
+          >{{ snapshot.cash_balance | number : "1.2-2" }} $</span
+        >
       </div>
     </div>
   </div>
-
-  <!-- Description -->
   <div class="balance-description">
-    Total Net Worth overview — chart shows the last 30 days of net worth
-    changes.
+    Total Net Worth overview — last 30 days performance.
   </div>
-
-  <!-- Line Chart -->
   <div class="chart-container">
     <canvas #netWorthChart></canvas>
   </div>

@@ -1,119 +1,26 @@
-.tab-buttons {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-  gap: 8px;
+/* 1) Scrollable wrapper */
+.table-container {
+  /* height: whatever’s left under your tabs, or a fixed px/rem */
+  max-height: calc(100% - 48px);  /* example: subtract tab-buttons height */
+  overflow-y: auto;
 }
 
-.tab-btn {
-  padding: 8px 16px;
-  background-color: #d4eef7;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.tab-btn.active {
-  background-color: #b0e3f5;
-}
-
-.tab-btn:hover {
-  background-color: #c3eaf7;
-}
-
-.dashboard-table {
-  width: 100%;
-  width: 800px;
-  margin: 0 auto;
-  border-collapse: collapse;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 14px;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-}
-
-.dashboard-table thead {
-  background-color: #d4eef7;
-}
-
-.dashboard-table th,
-.dashboard-table td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.dashboard-table th {
-  font-weight: 700;
-  font-size: 13px;
-  color: #333;
-}
-
-.sell-btn {
-  background-color: #f7f7f7;
-  border: none;
-  padding: 6px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.sell-btn:hover {
-  background-color: #bfe4f1;
-}
-
-.buy {
-  color: green;
-  font-weight: bold;
-}
-
-.sell {
-  color: red;
-  font-weight: bold;
-}
-
-.dashboard-table th,
-.dashboard-table td {
-  text-align: center;
-}
-.dashboard-table tbody {
-  max-height: 200px;
-  overflow-y: scroll;
-  flex: 1;
-  display: block;
-}
-
-.dashboard-table tr {
+/* 2) Keep the table layout so sticky works */
+.table thead,
+.table tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
 
-/*  */
-.table-container {
-  position: relative;
-  min-height: 400px; /* adjust based on your table height */
-  width: 100%;
-}
-
-.fade-table {
-  position: absolute;
+/* 3) Sticky headers */
+.table thead th {
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  transform: translateY(10px);
-}
-
-.fade-table.active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-  z-index: 1;
+  background-color: var(--primary-light);
+  z-index: 2;
+  /* preserve your padding/text styles */
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
 }

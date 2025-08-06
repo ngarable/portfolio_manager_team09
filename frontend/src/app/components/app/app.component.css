@@ -1,61 +1,137 @@
+.dashboard-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  height: 100vh;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* LEFT COLUMN: Balance + Charts stacked */
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+.balance-wrapper {
+  flex: 0.5; /* Balance takes 50% of column height */
+  min-height: 0;
+}
+
+.charts-wrapper {
+  flex: 0.5; /* Charts take other 50% */
+  min-height: 0;
+}
+
+/* RIGHT COLUMN: Buttons + Table */
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+.table-header {
+  flex: 0 0 auto;
+}
+
 .buy-btn-center {
   display: flex;
-  justify-content: center;
-  margin: 28px 0 18px 0;
   gap: 16px;
 }
 
-.dashboard__buy-btn {
-  padding: 8px 16px;
-  background-color: #d4eef7;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.dashboard__buy-btn:hover {
-  background-color: #c3eaf7;
-}
-
-.dashboard-content {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.dashboard-content > * {
+.table-section {
   flex: 1;
-  min-width: 0;
+  overflow: hidden;
+  min-height: 0;
 }
 
-.wrapper {
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in forwards;
-  display: flex;
-  width: 100%;
-  gap: 10px;
-  height: 100vh;
+app-portfolio-table {
+  height: 100%;
+  display: block;
+  overflow: auto;
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .dashboard-wrapper {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    height: auto;
+    overflow: visible;
+  }
+  .dashboard-left, .dashboard-right {
+    height: auto;
+    min-height: auto;
   }
 }
 
-.half {
-  flex: 1;
-  width: 50%;
+.dashboard-right {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-app-assets-charts {
-  height: 200px;
+.table-section {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
 }
 
-.app-balance {
-  margin-left: 20px;
-  /* margin: 20px 0 0 auto; */
+.table-section {
+  flex: 1 1 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+app-portfolio-table {
+  height: 100%;
+  display: block;
+  overflow: auto;
+}
+.charts-row {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  height: 170px;        /* Control overall height */
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.dashboard-chart {
+  flex: 1 1 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius);
+  margin: 0;
+  height: 100%;         /* Fill parent */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.pie-chart {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+  /* No need to set flex on balance/charts */
 }
