@@ -26,7 +26,7 @@ export class BalanceComponent implements OnInit {
   snapshot: any = null;
   @ViewChild('netWorthChart') netWorthChart!: ElementRef<HTMLCanvasElement>;
   @Output() deposit = new EventEmitter<void>();
-  
+
   constructor(
     private portfolioService: PortfolioService,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -64,6 +64,9 @@ export class BalanceComponent implements OnInit {
   loadChart(labels: string[], netWorthData: number[]) {
     if (!this.netWorthChart) return;
 
+    const min = Math.min(...netWorthData);
+    const max = Math.max(...netWorthData);
+
     new Chart(this.netWorthChart.nativeElement, {
       type: 'line',
       data: {
@@ -76,11 +79,27 @@ export class BalanceComponent implements OnInit {
             backgroundColor: 'rgba(33, 150, 243, 0.2)',
             fill: true,
             tension: 0.2,
+            pointRadius: 3,
           },
         ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 45,
+              autoSkip: true,
+              maxTicksLimit: 10,
+            },
+          },
+          y: {
+            beginAtZero: false,
+            suggestedMin: min * 0.9,
+            suggestedMax: max,
+          },
+        },
         plugins: {
           legend: { display: false },
         },

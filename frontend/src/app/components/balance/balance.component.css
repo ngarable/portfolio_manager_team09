@@ -67,3 +67,19 @@ canvas {
   width: 100% !important;
   height: 160px !important;
 }
+
+.chart-container {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  height: 240px;
+  margin-top: 12px;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.balance-value {
+  color: var(--primary-color);
+}
