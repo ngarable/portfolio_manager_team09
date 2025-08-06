@@ -10,7 +10,6 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { PortfolioService } from '../../services/portfolio.service';
-import { from } from 'rxjs';
 
 Chart.register(...registerables);
 
@@ -37,17 +36,30 @@ export class BalanceComponent implements OnInit {
         next: (res) => {
           this.snapshot = res;
           this.cdr.detectChanges();
-          setTimeout(() => this.loadChart(), 0);
+        },
+      });
+
+      this.portfolioService.getSnapshotHistory().subscribe({
+        next: (history) => {
+          const lastMonth = history.filter((s) => {
+            const snapshotDate = new Date(s.date);
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - 30);
+            return snapshotDate >= cutoff;
+          });
+
+          const labels = lastMonth.map((s) => s.date);
+          const netWorthData = lastMonth.map((s) => s.net_worth);
+
+          this.cdr.detectChanges();
+          setTimeout(() => this.loadChart(labels, netWorthData), 0);
         },
       });
     }
   }
 
-  loadChart() {
+  loadChart(labels: string[], netWorthData: number[]) {
     if (!this.netWorthChart) return;
-
-    const labels = ['2025-08-01', '2025-08-02', '2025-08-03', '2025-08-04'];
-    const netWorthData = [10000, 10200, 10150, 10300];
 
     new Chart(this.netWorthChart.nativeElement, {
       type: 'line',
@@ -67,9 +79,7 @@ export class BalanceComponent implements OnInit {
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            position: 'bottom',
-          },
+          legend: { display: false },
         },
       },
     });

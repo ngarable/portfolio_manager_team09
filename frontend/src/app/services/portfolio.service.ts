@@ -6,6 +6,7 @@ import {
   ValueAllocation,
   GainerLoser,
 } from '../interfaces/portfolio';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -69,19 +70,12 @@ export class PortfolioService {
     return this.http.get('/api/portfolio/recent_orders');
   }
 
-  getLatestSnapshot() {
-    return this.http.get<{
-      date: string;
-      total_invested_value: number;
-      cash_balance: number;
-      net_worth: number;
-    }>('/api/portfolio/snapshot/latest');
+  getLatestSnapshot(): Observable<any> {
+    return this.http.get('/api/portfolio/snapshot/latest');
   }
 
-  getSnapshotHistory() {
-    return this.http.get<{ date: string; net_worth: number }[]>(
-      '/api/portfolio/snapshot/history'
-    );
+  getSnapshotHistory(): Observable<any[]> {
+    return this.http.get<any[]>('/api/portfolio/snapshot/history');
   }
 
   getChatbotResponse(question: string) {
