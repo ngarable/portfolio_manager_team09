@@ -1,4 +1,10 @@
 <div class="card full-height-card">
+  <!-- BUY button -->
+  <div class="table-actions">
+    <button class="btn btn-primary" (click)="buy.emit()">Buy</button>
+  </div>
+
+  <!-- TAB BUTTONS -->
   <div class="tab-buttons">
     <button
       class="btn btn-primary"
@@ -16,66 +22,100 @@
     </button>
   </div>
 
-  <div class="table-container" *ngIf="activeTab === 'portfolio'">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>SYMBOL</th>
-          <th>TYPE</th>
-          <th>QUANTITY</th>
-          <th>PNL (%)</th>
-          <th>PNL ($)</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let a of assets">
-          <td>{{ a.ticker }}</td>
-          <td>{{ a.asset_type | titlecase }}</td>
-          <td>{{ a.quantity }}</td>
-          <td [ngClass]="{ buy: a.pnl_percentage > 0, sell: a.pnl_percentage < 0 }">
-            {{ a.pnl_percentage + "%" }}
-          </td>
-          <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
-            {{ a.pnl + "$" }}
-          </td>
-          <td>
-            <button class="btn btn-primary" (click)="openSellModal(a.ticker)">
-              SELL
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- TABLE HEADER + BODY -->
+  <div class="table-wrapper">
+    <!-- PORTFOLIO VIEW -->
+    <ng-container *ngIf="activeTab === 'portfolio'">
+      <div class="table-header">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>SYMBOL</th>
+              <th>TYPE</th>
+              <th>QUANTITY</th>
+              <th>PNL (%)</th>
+              <th>PNL ($)</th>
+              <th></th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="table-body">
+        <table class="table">
+          <tbody>
+            <tr *ngFor="let a of assets">
+              <td>{{ a.ticker }}</td>
+              <td>{{ a.asset_type | titlecase }}</td>
+              <td>{{ a.quantity }}</td>
+              <td
+                [ngClass]="{
+                  buy: a.pnl_percentage > 0,
+                  sell: a.pnl_percentage < 0
+                }"
+              >
+                {{ a.pnl_percentage + "%" }}
+              </td>
+              <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
+                {{ a.pnl + "$" }}
+              </td>
+              <td>
+                <button
+                  class="btn btn-primary"
+                  (click)="openSellModal(a.ticker)"
+                >
+                  SELL
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <!-- ORDERS VIEW -->
+    <ng-container *ngIf="activeTab === 'orders'">
+      <div class="table-header">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>TICKER</th>
+              <th>TYPE</th>
+              <th>QUANTITY</th>
+              <th>TOTAL PRICE</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="table-body">
+        <table class="table">
+          <tbody>
+            <tr *ngFor="let o of orders">
+              <td>{{ o.date }}</td>
+              <td>{{ o.ticker }}</td>
+              <td
+                [ngClass]="{ buy: o.type === 'BUY', sell: o.type === 'SELL' }"
+              >
+                {{ o.type }}
+              </td>
+              <td>{{ o.quantity }}</td>
+              <td>
+                {{
+                  (o.type === "SELL" ? "+" : "-") + o.price * o.quantity
+                    | number : "1.2-2"
+                }}$
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
   </div>
 
-  <div class="table-container" *ngIf="activeTab === 'orders'">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>DATE</th>
-          <th>TICKER</th>
-          <th>TYPE</th>
-          <th>QUANTITY</th>
-          <th>TOTAL PRICE</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let o of orders">
-          <td>{{ o.date }}</td>
-          <td>{{ o.ticker }}</td>
-          <td [ngClass]="{ buy: o.type === 'BUY', sell: o.type === 'SELL' }">
-            {{ o.type }}
-          </td>
-          <td>{{ o.quantity }}</td>
-          <td>
-            {{
-              (o.type === "SELL" ? "+" : "-") +
-              (o.price * o.quantity) | number: "1.2-2"
-            }}$
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- SELL MODAL -->
+  <app-sell-modal
+    [visible]="modalVisible"
+    [ticker]="selectedTicker"
+    (close)="closeModal()"
+  ></app-sell-modal>
 </div>

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { PortfolioService } from '../../services/portfolio.service';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PortfolioService } from '../../services/portfolio.service';
 import { SellModalComponent } from '../sell-modal/sell-modal.component';
 
 @Component({
@@ -8,9 +8,11 @@ import { SellModalComponent } from '../sell-modal/sell-modal.component';
   standalone: true,
   imports: [CommonModule, SellModalComponent],
   templateUrl: './portfolio-table.component.html',
-  styleUrl: './portfolio-table.component.css',
+  styleUrls: ['./portfolio-table.component.css'],
 })
 export class PortfolioTableComponent implements OnInit {
+  @Output() buy = new EventEmitter<void>();
+
   assets: any[] = [];
   orders: any[] = [];
 
@@ -26,28 +28,26 @@ export class PortfolioTableComponent implements OnInit {
     this.loadRecentOrders();
   }
 
-  loadRecentOrders() {
+  public loadAssets(): void {
+    this.portfolioService.getPnlByAsset().subscribe({
+      next: (data: any) => (this.assets = data),
+      error: (err) => console.error('Error fetching assets:', err),
+    });
+  }
+
+  private loadRecentOrders(): void {
     this.portfolioService.getRecentOrders().subscribe({
-      next: (data: any) => {
-        this.orders = data;
-      },
+      next: (data: any) => (this.orders = data),
       error: (err) => console.error('Error fetching recent orders:', err),
     });
   }
 
-  loadAssets() {
-    this.portfolioService.getPnlByAsset().subscribe({
-      next: (data: any) => (this.assets = data),
-      error: (err) => console.error('API error:', err),
-    });
-  }
-
-  openSellModal(ticker: string) {
+  openSellModal(ticker: string): void {
     this.selectedTicker = ticker;
     this.modalVisible = true;
   }
 
-  closeModal() {
+  closeModal(): void {
     this.modalVisible = false;
     this.selectedTicker = '';
   }

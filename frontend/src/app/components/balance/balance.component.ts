@@ -6,6 +6,8 @@ import {
   Inject,
   PLATFORM_ID,
   ChangeDetectorRef,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
@@ -23,7 +25,8 @@ Chart.register(...registerables);
 export class BalanceComponent implements OnInit {
   snapshot: any = null;
   @ViewChild('netWorthChart') netWorthChart!: ElementRef<HTMLCanvasElement>;
-
+  @Output() deposit = new EventEmitter<void>();
+  
   constructor(
     private portfolioService: PortfolioService,
     @Inject(PLATFORM_ID) private platformId: Object,

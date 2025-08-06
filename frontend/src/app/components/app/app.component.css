@@ -4,11 +4,8 @@
   gap: 20px;
   height: 100vh;
   padding: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
 }
 
-/* LEFT COLUMN: Balance + Charts stacked */
 .dashboard-left {
   display: flex;
   flex-direction: column;
@@ -17,32 +14,18 @@
   min-height: 0;
 }
 
-.balance-wrapper {
-  flex: 0.5; /* Balance takes 50% of column height */
-  min-height: 0;
-}
-
+.balance-wrapper,
 .charts-wrapper {
-  flex: 0.5; /* Charts take other 50% */
+  flex: 1;
   min-height: 0;
 }
 
-/* RIGHT COLUMN: Buttons + Table */
 .dashboard-right {
   display: flex;
   flex-direction: column;
   gap: 10px;
   height: 100%;
   min-height: 0;
-}
-
-.table-header {
-  flex: 0 0 auto;
-}
-
-.buy-btn-center {
-  display: flex;
-  gap: 16px;
 }
 
 .table-section {
@@ -51,87 +34,21 @@
   min-height: 0;
 }
 
+/* Allow <app-portfolio-table> itself to fill */
 app-portfolio-table {
-  height: 100%;
   display: block;
-  overflow: auto;
+  height: 100%;
 }
 
-/* RESPONSIVE */
 @media (max-width: 1200px) {
   .dashboard-wrapper {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
     height: auto;
     overflow: visible;
   }
-  .dashboard-left, .dashboard-right {
+  .dashboard-left,
+  .dashboard-right {
     height: auto;
     min-height: auto;
   }
-}
-
-.dashboard-right {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.table-section {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-}
-.dashboard-right {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  min-height: 0;
-}
-
-.table-section {
-  flex: 1 1 0;
-  overflow: hidden;
-  min-height: 0;
-}
-
-app-portfolio-table {
-  height: 100%;
-  display: block;
-  overflow: auto;
-}
-.charts-row {
-  display: flex;
-  flex-direction: row;
-  gap: 18px;
-  height: 170px;        /* Control overall height */
-  align-items: flex-start;
-  justify-content: space-between;
-}
-.dashboard-chart {
-  flex: 1 1 0;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: var(--radius);
-  margin: 0;
-  height: 100%;         /* Fill parent */
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-.pie-chart {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
-}
-.dashboard-left {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  min-height: 0;
-  /* No need to set flex on balance/charts */
 }

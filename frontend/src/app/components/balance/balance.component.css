@@ -1,15 +1,18 @@
 .balance-card {
-  background: var(--bg-light);
-  border-radius: var(--radius);
-  border: 1.5px solid var(--border-color);
-  box-shadow: var(--shadow);
-  font-family: var(--font-main);
-  padding: 22px 24px 18px 24px;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.18s;
   height: 100%;
-  box-sizing: border-box;
+  padding: 22px 24px 18px;
+  background: var(--bg-light);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.balance-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .balance-header {
@@ -19,32 +22,20 @@
   margin-bottom: 6px;
 }
 
-.balance-main {
-  display: flex;
-  flex-direction: column;
-}
-
 .balance-value {
   font-size: 2.1rem;
   font-weight: 700;
-  color: var(--primary-color);
-  letter-spacing: 0.5px;
+  color: var(--primary-light);
 }
 
 .balance-date {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-dark);
 }
 
 .balance-sub {
   display: flex;
   gap: 18px;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
 }
 
 .stat-label {
@@ -60,14 +51,13 @@
 
 .balance-description {
   font-size: 0.89rem;
-  color: var(--text-muted);
+  color: var(--text-dark);
   margin-bottom: 10px;
   font-style: italic;
 }
 
 .chart-container {
-  margin-top: 2px;
-  flex: 1 1 0;
+  flex: 1;
   min-height: 0;
   display: flex;
   align-items: flex-end;
@@ -76,6 +66,4 @@
 canvas {
   width: 100% !important;
   height: 160px !important;
-  max-height: 160px !important;
-  min-height: 140px;
 }

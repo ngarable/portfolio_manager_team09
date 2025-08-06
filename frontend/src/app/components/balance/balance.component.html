@@ -1,29 +1,39 @@
-<div *ngIf="snapshot" class="balance-card">
+<!-- Only render the card once snapshot is non-null -->
+<div *ngIf="snapshot as s" class="balance-card">
+
+  <div class="balance-actions">
+    <button class="btn btn-primary" (click)="deposit.emit()">Deposit</button>
+  </div>
+
   <div class="balance-header">
     <div class="balance-main">
       <div class="balance-value">
-        {{ snapshot.net_worth | number : "1.2-2" }} $
+        {{ s.net_worth | number:'1.2-2' }} $
       </div>
-      <div class="balance-date">as of {{ snapshot.date }}</div>
+      <div class="balance-date">
+        as of {{ s.date }}
+      </div>
     </div>
     <div class="balance-sub">
       <div class="stat">
         <span class="stat-label">Invested</span>
-        <span class="stat-value"
-          >{{ snapshot.total_invested_value | number : "1.2-2" }} $</span
-        >
+        <span class="stat-value">
+          {{ s.total_invested_value | number:'1.2-2' }} $
+        </span>
       </div>
-      <div class="stat stat-cash">
+      <div class="stat">
         <span class="stat-label">Cash</span>
-        <span class="stat-value"
-          >{{ snapshot.cash_balance | number : "1.2-2" }} $</span
-        >
+        <span class="stat-value">
+          {{ s.cash_balance | number:'1.2-2' }} $
+        </span>
       </div>
     </div>
   </div>
+
   <div class="balance-description">
     Total Net Worth overview — last 30 days performance.
   </div>
+
   <div class="chart-container">
     <canvas #netWorthChart></canvas>
   </div>

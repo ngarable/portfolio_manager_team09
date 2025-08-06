@@ -1,31 +1,24 @@
 .charts-container {
   display: flex;
-  flex-direction: row;
   gap: 22px;
-  align-items: stretch;
   height: 100%;
-  width: 100%;
   min-height: 0;
-  justify-content: space-evenly;
 }
 
 .dashboard-chart {
+  flex: 1;
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: 100%;
-  min-width: 0;
-  flex: 1 1 0;
-  box-shadow: var(--shadow);
-  padding-bottom: 12px;
 }
 
-.dashboard-chart__header {
+.section-title {
   background-color: var(--primary-light);
-  padding: 10px 16px 8px 16px;
+  padding: 10px 16px 8px;
   font-size: 13px;
   font-weight: 700;
   text-align: center;
@@ -33,11 +26,10 @@
 }
 
 .dashboard-chart__body {
-  padding: 16px 0 0 0;
-  flex: 1 1 0;
+  flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
+  padding-top: 16px;
 }
 
 .pie-chart {
@@ -45,13 +37,13 @@
   height: 140px;
   border-radius: 50%;
   background-repeat: no-repeat;
-  max-width: 100%;
+  margin-right: 16px;
 }
 
 .legend {
   list-style: none;
-  padding: 5px;
-  margin: 1rem 0 0;
+  margin: 0;
+  padding: 0;
 }
 .legend__item {
   display: flex;

@@ -2,7 +2,7 @@
   <!-- LEFT COLUMN -->
   <div class="dashboard-left">
     <div class="balance-wrapper">
-      <app-balance></app-balance>
+      <app-balance (deposit)="openDeposit()"></app-balance>
     </div>
     <div class="charts-wrapper">
       <app-assets-charts></app-assets-charts>
@@ -10,16 +10,11 @@
   </div>
   <!-- RIGHT COLUMN -->
   <div class="dashboard-right">
-    <div class="table-header">
-      <div class="buy-btn-center">
-        <button class="btn btn-primary" (click)="openDeposit()">Deposit</button>
-        <button class="btn btn-primary" (click)="openBuy()">Buy</button>
-      </div>
-    </div>
     <div class="table-section">
-      <app-portfolio-table></app-portfolio-table>
+      <app-portfolio-table (buy)="openBuy()"></app-portfolio-table>
     </div>
-    <!-- Modals -->
+
+    <!-- Modals stay here -->
     <app-deposit-modal (deposited)="handleDeposit($event)"></app-deposit-modal>
     <app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
   </div>
