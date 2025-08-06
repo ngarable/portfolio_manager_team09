@@ -60,7 +60,7 @@
                 class="pnl-cell"
                 [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }"
               >
-                {{ a.pnl + "$" }}
+                {{ a.pnl | number : "1.2-2" }}$
               </td>
               <td>
                 <button
