@@ -3,29 +3,52 @@
 
 <!-- Chat Window -->
 <div class="chatbot-window" *ngIf="isOpen">
+  <!-- Chat Header -->
   <div class="chatbot-header">
-    <span>Financial Advisor powered by AI</span>
-    <button (click)="toggleChat()">✖</button>
+    <h2 class="chatbot-header__title">AI Financial Advisor</h2>
+    <button
+      class="chatbot-header__close"
+      (click)="toggleChat()"
+      aria-label="Close chat"
+    >
+      ✖
+    </button>
   </div>
 
-  <div class="chatbot-messages">
-    <div *ngFor="let msg of messages" class="chat-message">
-      <b>{{ msg.from }}:</b>
-      <div *ngIf="msg.html; else plainText" [innerHTML]="msg.html"></div>
-      <ng-template #plainText>{{ msg.text }}</ng-template>
-    </div>
+  <!-- Messages -->
+  <div class="chatbot-messages" #messagesContainer>
+    <ng-container *ngFor="let msg of messages">
+      <div
+        class="chat-message"
+        [class.you]="msg.from === 'You'"
+        [class.ai]="msg.from === 'AI'"
+      >
+        <div class="chat-message__header">{{ msg.from }}</div>
+        <div class="chat-message__body">
+          <div *ngIf="msg.html; else plainText" [innerHTML]="msg.html"></div>
+          <ng-template #plainText>{{ msg.text }}</ng-template>
+        </div>
+      </div>
+    </ng-container>
 
-    <div *ngIf="loading" class="chat-message loading">
-      <b>AI:</b> <span class="spinner"></span> Thinking...
+    <div *ngIf="loading" class="chat-message ai loading">
+      <div class="chat-message__header">AI</div>
+      <div class="chat-message__body">
+        <span class="spinner"></span> Thinking...
+      </div>
     </div>
   </div>
 
+  <!-- Input -->
   <div class="chatbot-input">
-    <input
+    <textarea
+      class="chatbot-input__textarea"
       [(ngModel)]="newMessage"
-      (keydown.enter)="sendMessage()"
+      (input)="autoGrow($event)"
+      (keydown.enter)="sendMessage(); $event.preventDefault()"
       placeholder="Type your message..."
-    />
-    <button (click)="sendMessage()">Send</button>
+      rows="1"
+    ></textarea>
+    <button class="btn btn-primary" (click)="sendMessage()">Send</button>
   </div>
 </div>

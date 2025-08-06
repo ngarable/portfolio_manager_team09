@@ -1,159 +1,190 @@
-/* Use a clean, modern font */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
-
-* {
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
+/* ==== Chatbot Button ==== */
 .chatbot-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: #0d47a1; /* darker for contrast */
+  color: #fff;
   font-size: 24px;
   padding: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius);
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s ease;
+  box-shadow: var(--shadow);
 }
-
 .chatbot-button:hover {
-  background-color: #005dc1;
+  background-color: #1976d2;
 }
 
+/* ==== Chat Window ==== */
 .chatbot-window {
   position: fixed;
   bottom: 80px;
   right: 20px;
-  width: 500px; /* Wider window */
-  max-height: 500px;
-  background: #f9f9f9;
-  border: 1px solid #ccc;
+  width: 450px;
+  height: 600px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  border-radius: 12px;
   overflow: hidden;
+  z-index: 1000;
 }
 
+/* ==== Header ==== */
 .chatbot-header {
-  background: #007bff;
-  color: white;
-  padding: 12px 16px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-weight: 600;
-  font-size: 16px;
+  background: #2196f3;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
 }
-
-.chatbot-header button {
+.chatbot-header__title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+}
+.chatbot-header__close {
   background: transparent;
   border: none;
-  color: white;
-  font-size: 18px;
+  color: #fff;
+  font-size: 1.2rem;
   cursor: pointer;
+  padding: 4px;
 }
 
+/* ==== Messages List ==== */
 .chatbot-messages {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
-  font-size: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   background: #fff;
 }
 
+/* ==== Individual Bubble ==== */
 .chat-message {
-  padding: 10px 14px;
-  border-radius: 10px;
-  max-width: 80%;
-  word-wrap: break-word;
-}
-
-.chat-message b {
-  display: block;
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 3px;
-}
-
-.chat-message:nth-child(odd) {
-  background-color: #e6f0ff;
-  align-self: flex-end;
-}
-
-.chat-message:nth-child(even) {
-  background-color: #f1f1f1;
-  align-self: flex-start;
-}
-
-.chatbot-input {
+  box-sizing: border-box;           /* include padding in width */
   display: flex;
-  border-top: 1px solid #ccc;
-  padding: 12px;
-  gap: 10px;
-  background: #fafafa;
+  flex-direction: column;
+  background-color: var(--primary-light);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  max-width: 90%;                   /* bubble width */
+  overflow-wrap: break-word;        /* wrap long words */
+  hyphens: auto;                    /* optional hyphenation */
+  margin: 0;                        /* no extra gap */
 }
 
-.chatbot-input input {
-  flex: 1;
-  padding: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.2s ease;
+/* Left vs. right alignment */
+.chat-message.you { align-self: flex-end; }
+.chat-message.ai  { align-self: flex-start; }
+
+/* Bubble header ("You"/"AI") */
+.chat-message__header {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--text-dark);
 }
 
-.chatbot-input input:focus {
-  border-color: #007bff;
+/* Bubble body: reset paragraph margins and wrap lists */
+.chat-message__body {
+  white-space: pre-wrap;
+  color: #000;
+}
+/* Strip default p spacing */
+.chat-message__body p {
+  margin: 0;
+  padding: 0;
 }
 
-.chatbot-input button {
-  border: none;
-  background: #007bff;
-  color: white;
-  padding: 14px 18px;
-  font-size: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+/* === Force lists fully inside bubble === */
+.chat-message__body ul,
+.chat-message__body ol {
+  margin: 0 0 0.5em 0;     /* small gap after list */
+  padding: 0;
+  padding-inline-start: 1.2em;  /* indent markers + text */
+  list-style-position: inside;  /* bullet/number inside padding */
 }
 
-.chatbot-input button:hover {
-  background-color: #005dc1;
-}
-
+/* ==== Loading State ==== */
 .chat-message.loading {
-  background-color: #f1f1f1;
-  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 8px;
+  background-color: #fff;
   font-style: italic;
-  color: #555;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-radius: var(--radius);
 }
-
 .spinner {
   width: 16px;
   height: 16px;
-  border: 3px solid #ccc;
-  border-top-color: #007bff;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
-/* Spinner animation */
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
+}
+
+/* ==== Input Area ==== */
+.chatbot-input {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  padding: 12px;
+  gap: 10px;
+  background: #fff;
+}
+.chatbot-input__textarea {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  min-height: 40px;
+  max-height: 200px;
+  line-height: 1.4;
+}
+.chatbot-input__textarea:focus {
+  border-color: var(--primary-color);
+}
+.chatbot-input button {
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.chatbot-input button:hover {
+  background-color: var(--accent-color);
+}
+
+.chat-message.loading .spinner {
+  display: inline-block;               /* make it visible again */
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;   /* spin animation */
+}
+
+/* Make sure this keyframe is only defined once */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

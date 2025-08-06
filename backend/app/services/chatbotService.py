@@ -1,4 +1,5 @@
 import os
+import re
 import openai
 from dotenv import load_dotenv
 from app.services import portfolioService, yfinanceService
@@ -17,12 +18,10 @@ chat_history = [
             "'I'm a Financial Advisor powered by AI, and I only answer financial-related questions.'\n\n"
             "If the user says 'Hi' or 'Hello', greet them and introduce yourself.\n\n"
             "**Always format your response clearly using Markdown with:**\n"
-            "- Headings (`###`) for sections\n"
-            "- Bullet points for tips\n"
-            "- **Bold** key terms\n"
-            "- Short paragraphs (max 3 sentences each)\n"
-            "- Inline code for values like `$5125.40`\n"
-            "- Keep the answer under 200 words unless deeply technical"
+            "- Use at most **100 words** total\n"
+            "- **Bold** only the key terms\n"
+            "- Inline code for figures like `$5125.40`\n"
+            "- Paragraphs no more than 2 sentences each\n"
         )
     }
 ]
@@ -69,10 +68,13 @@ def ask_chatbot(user_question: str) -> str:
     )
 
     assistant_reply = response.choices[0].message.content.strip()
+    assistant_reply = re.sub(r'\n{3,}', '\n\n', assistant_reply)
+    words = assistant_reply.split()
+    if len(words) > 150:
+        assistant_reply = ' '.join(words[:150]) + '…'
 
     chat_history.append({
         "role": "assistant",
         "content": assistant_reply
     })
-
     return assistant_reply

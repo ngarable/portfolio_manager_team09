@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PortfolioService } from '../../services/portfolio.service';
@@ -12,11 +17,13 @@ import { marked } from 'marked';
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css'],
 })
-export class ChatbotComponent {
+export class ChatbotComponent implements AfterViewChecked {
+  @ViewChild('messagesContainer')
+  private messagesContainer!: ElementRef<HTMLDivElement>;
+
   isOpen = false;
   newMessage = '';
   loading = false;
-
   messages: { from: string; text: string; html?: SafeHtml }[] = [];
 
   constructor(
@@ -26,6 +33,17 @@ export class ChatbotComponent {
 
   toggleChat() {
     this.isOpen = !this.isOpen;
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom(): void {
+    try {
+      const el = this.messagesContainer.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    } catch {}
   }
 
   async sendMessage() {
@@ -53,5 +71,11 @@ export class ChatbotComponent {
         console.error('Chatbot error:', err);
       },
     });
+  }
+
+  autoGrow(event: Event): void {
+    const ta = event.target as HTMLTextAreaElement;
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
   }
 }

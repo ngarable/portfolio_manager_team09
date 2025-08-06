@@ -16,6 +16,7 @@ export class DepositModalComponent {
   isOpen = false;
   amount: number | null = null;
   isLoading = false;
+  errorMessage: string | null = null;
 
   constructor(private portfolioService: PortfolioService) {}
 
