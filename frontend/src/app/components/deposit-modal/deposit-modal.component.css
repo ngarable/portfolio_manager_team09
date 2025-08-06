@@ -1,19 +1,29 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: grid;
   place-items: center;
   z-index: 1000;
 }
 
 .modal {
-  /* solid white, not semi-transparent */
   background: #fff;
   width: 90%;
   max-width: 400px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+/* Success banner */
+.modal__success {
+  background-color: var(--success-color);
+  color: #fff;
+  padding: 12px 16px;
+  margin: 0 16px 12px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
 }
 
 .modal__title {
@@ -38,7 +48,6 @@
 }
 
 .modal__input {
-  /* full-width inputs */
   width: 100%;
   margin-top: 4px;
   padding: 8px;
@@ -53,6 +62,6 @@
 
 .modal__buttons {
   display: flex;
-  justify-content: flex-end; /* buttons at right */
+  justify-content: flex-end;
   gap: 8px;
 }

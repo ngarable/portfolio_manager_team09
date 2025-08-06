@@ -15,13 +15,17 @@ export class DepositModalComponent {
 
   isOpen = false;
   amount: number | null = null;
-  isLoading = false;
   errorMessage: string | null = null;
+  successMessage: string | null = null;
+  isLoading = false;
 
   constructor(private portfolioService: PortfolioService) {}
 
   open() {
     this.amount = null;
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.isLoading = false;
     this.isOpen = true;
   }
 
@@ -31,23 +35,30 @@ export class DepositModalComponent {
 
   submitDeposit() {
     if (!this.amount || this.amount <= 0) {
-      alert('Please enter a valid amount.');
+      this.errorMessage = 'Amount must be greater than zero.';
       return;
     }
 
+    this.errorMessage = null;
     this.isLoading = true;
+
     this.portfolioService.deposit(this.amount).subscribe({
       next: (res: any) => {
         this.isLoading = false;
+        this.successMessage =
+          `You deposited $${this.amount!.toFixed(2)}! ` +
+          `New balance: $${res.available_balance.toFixed(2)}.`;
         this.deposited.emit(this.amount!);
-        alert(`Deposit successful! New balance: $${res.available_balance}`);
-        this.close();
-        window.location.reload();
+
+        setTimeout(() => {
+          this.close();
+          window.location.reload();
+        }, 2000);
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Deposit failed', err);
-        alert('Deposit failed; see console for details.');
+        this.errorMessage = 'An unexpected error occurred.';
       },
     });
   }

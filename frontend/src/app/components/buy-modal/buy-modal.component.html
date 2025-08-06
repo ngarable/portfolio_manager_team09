@@ -1,7 +1,13 @@
 <div class="modal-backdrop" *ngIf="show">
   <div class="modal card">
     <h2 class="modal__title">Buy Asset</h2>
+
     <form class="modal__form" (ngSubmit)="onConfirm()">
+      <!-- Success banner -->
+      <div *ngIf="successMessage" class="modal__success">
+        {{ successMessage }}
+      </div>
+
       <label class="modal__label">
         Ticker
         <input
@@ -11,6 +17,7 @@
           class="modal__input"
         />
       </label>
+
       <label class="modal__label">
         Quantity
         <input
@@ -23,12 +30,21 @@
           class="modal__input"
         />
       </label>
+
       <div class="modal__error" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
+
       <div class="modal__buttons">
-        <button type="submit" class="btn btn-success">Confirm</button>
-        <button type="button" class="btn btn-primary" (click)="onCancel()">
+        <button type="submit" class="btn btn-success" [disabled]="isLoading">
+          {{ isLoading ? "Processing…" : "Confirm" }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onCancel()"
+          [disabled]="isLoading"
+        >
           Cancel
         </button>
       </div>
@@ -45,18 +61,17 @@
           {{ stock.ticker }}
         </button>
         <div class="modal__stock-info">
-          <p><strong>Name :</strong> {{ stock.shortName || "N/A" }}</p>
+          <p><strong>Name:</strong> {{ stock.shortName || "N/A" }}</p>
           <p>
-            <strong>Price :</strong> {{ stock.marketPrice | number : "1.2-2" }}$
+            <strong>Price:</strong>
+            {{ stock.marketPrice | number : "1.2-2" }}$
           </p>
           <p>
-            <strong>Now vs previous close :</strong
-            >{{
-              stock.pctChange != null ? " " + stock.pctChange + "%" : " N/A"
-            }}
+            <strong>Change:</strong>
+            {{ stock.pctChange != null ? stock.pctChange + "%" : "N/A" }}
           </p>
-          <p><strong>Sector :</strong> {{ stock.sector || "N/A" }}</p>
-          <p><strong>Industry :</strong> {{ stock.industry || "N/A" }}</p>
+          <p><strong>Sector:</strong> {{ stock.sector || "N/A" }}</p>
+          <p><strong>Industry:</strong> {{ stock.industry || "N/A" }}</p>
         </div>
       </li>
     </ul>

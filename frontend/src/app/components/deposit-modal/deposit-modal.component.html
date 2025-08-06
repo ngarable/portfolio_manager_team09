@@ -1,7 +1,13 @@
 <div class="modal-backdrop" *ngIf="isOpen">
   <div class="modal card">
     <h2 class="modal__title">Deposit Funds</h2>
+
     <form class="modal__form" (ngSubmit)="submitDeposit()">
+      <!-- Success banner -->
+      <div *ngIf="successMessage" class="modal__success">
+        {{ successMessage }}
+      </div>
+
       <label class="modal__label">
         Amount
         <input
@@ -14,12 +20,18 @@
           class="modal__input"
         />
       </label>
+
       <div class="modal__error" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
+
       <div class="modal__buttons">
-        <button type="submit" class="btn btn-success">Confirm</button>
-        <button type="button" class="btn btn-primary" (click)="close()">Cancel</button>
+        <button type="submit" class="btn btn-success" [disabled]="isLoading">
+          {{ isLoading ? "Processing…" : "Confirm" }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="close()">
+          Cancel
+        </button>
       </div>
     </form>
   </div>
