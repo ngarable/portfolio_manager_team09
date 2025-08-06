@@ -40,7 +40,7 @@
           </thead>
         </table>
       </div>
-      <div class="table-body">
+      <div class="table-body portfolio-body">
         <table class="table">
           <tbody>
             <tr *ngFor="let a of assets">
@@ -48,6 +48,7 @@
               <td>{{ a.asset_type | titlecase }}</td>
               <td>{{ a.quantity }}</td>
               <td
+                class="pnl-cell"
                 [ngClass]="{
                   buy: a.pnl_percentage > 0,
                   sell: a.pnl_percentage < 0
@@ -55,7 +56,10 @@
               >
                 {{ a.pnl_percentage + "%" }}
               </td>
-              <td [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }">
+              <td
+                class="pnl-cell"
+                [ngClass]="{ buy: a.pnl > 0, sell: a.pnl < 0 }"
+              >
                 {{ a.pnl + "$" }}
               </td>
               <td>
@@ -63,7 +67,7 @@
                   class="btn btn-primary"
                   (click)="openSellModal(a.ticker)"
                 >
-                  SELL
+                  Sell
                 </button>
               </td>
             </tr>
@@ -101,8 +105,8 @@
               <td>{{ o.quantity }}</td>
               <td>
                 {{
-                  (o.type === "SELL" ? "+" : "-") + o.price * o.quantity
-                    | number : "1.2-2"
+                  (o.type === "SELL" ? "+" : "-") +
+                    (o.price * o.quantity | number : "1.2-2")
                 }}$
               </td>
             </tr>
