@@ -1,10 +1,7 @@
 import {
   Component,
-  Input,
   Output,
   EventEmitter,
-  OnChanges,
-  SimpleChanges,
   ViewChild,
   ElementRef,
 } from '@angular/core';
@@ -18,11 +15,13 @@ import { PortfolioService } from '../../services/portfolio.service';
   templateUrl: './sell-modal.component.html',
   styleUrls: ['./sell-modal.component.css'],
 })
-export class SellModalComponent implements OnChanges {
+export class SellModalComponent {
   @ViewChild('quantityInput') quantityInput!: ElementRef<HTMLInputElement>;
-  @Input() ticker = '';
-  @Input() visible = false;
-  @Output() close = new EventEmitter<void>();
+  @Output() sold = new EventEmitter<void>();
+
+  show = false;
+
+  ticker = '';
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
@@ -30,14 +29,18 @@ export class SellModalComponent implements OnChanges {
 
   constructor(private portfolioService: PortfolioService) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['visible'] && this.visible) {
-      this.errorMessage = this.successMessage = null;
-      this.isLoading = false;
-    }
+  open(ticker: string) {
+    this.ticker = ticker;
+    this.errorMessage = this.successMessage = null;
+    this.isLoading = false;
+    this.show = true;
   }
 
-  confirmSell() {
+  close() {
+    this.show = false;
+  }
+
+  onConfirm() {
     const qty = this.quantityInput.nativeElement.valueAsNumber;
     if (!qty || qty < 1) {
       this.errorMessage = 'Quantity must be at least 1.';
@@ -54,8 +57,9 @@ export class SellModalComponent implements OnChanges {
             this.ticker
           }!`;
           setTimeout(() => {
-            this.onClose();
-            window.location.reload();
+            this.sold.emit();
+            this.close();
+            this.isLoading = false;
           }, 2000);
         },
         error: (err) => {
@@ -67,10 +71,5 @@ export class SellModalComponent implements OnChanges {
           this.isLoading = false;
         },
       });
-  }
-
-  onClose() {
-    this.errorMessage = this.successMessage = null;
-    this.close.emit();
   }
 }

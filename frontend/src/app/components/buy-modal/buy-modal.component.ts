@@ -30,7 +30,10 @@ export class BuyModalComponent {
   constructor(private portfolioService: PortfolioService) {}
 
   open() {
-    this.resetForm();
+    this.ticker = '';
+    this.quantity = null;
+    this.errorMessage = this.successMessage = null;
+    this.isLoading = false;
     this.availableStocks = [];
     this.availableTickers.forEach((t) =>
       this.portfolioService.getStockDetails(t).subscribe((d) => {
@@ -46,11 +49,8 @@ export class BuyModalComponent {
     this.show = true;
   }
 
-  resetForm() {
-    this.ticker = '';
-    this.quantity = null;
-    this.errorMessage = this.successMessage = null;
-    this.isLoading = false;
+  close() {
+    this.show = false;
   }
 
   selectTicker(t: string) {
@@ -97,7 +97,6 @@ export class BuyModalComponent {
           });
           setTimeout(() => {
             this.show = false;
-            window.location.reload();
           }, 2000);
         },
         error: (err) => {
@@ -109,9 +108,5 @@ export class BuyModalComponent {
           this.isLoading = false;
         },
       });
-  }
-
-  close() {
-    this.show = false;
   }
 }

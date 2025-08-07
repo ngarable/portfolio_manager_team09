@@ -1,9 +1,8 @@
-<div class="modal-backdrop" *ngIf="visible">
+<div class="modal-backdrop" *ngIf="show">
   <div class="modal card">
     <h2 class="modal__title">Sell {{ ticker }}</h2>
 
-    <form class="modal__form">
-      <!-- Success banner -->
+    <form class="modal__form" (submit)="$event.preventDefault()">
       <div *ngIf="successMessage" class="modal__success">
         {{ successMessage }}
       </div>
@@ -29,15 +28,15 @@
         <button
           type="button"
           class="btn btn-danger"
-          (click)="confirmSell()"
+          (click)="onConfirm()"
           [disabled]="isLoading"
         >
           {{ isLoading ? "Processing…" : "Sell" }}
         </button>
         <button
           type="button"
-          class="btn btn-primary"
-          (click)="onClose()"
+          class="btn btn-secondary"
+          (click)="close()"
           [disabled]="isLoading"
         >
           Cancel

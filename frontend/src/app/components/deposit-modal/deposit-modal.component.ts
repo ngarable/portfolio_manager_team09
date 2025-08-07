@@ -33,7 +33,7 @@ export class DepositModalComponent {
     this.isOpen = false;
   }
 
-  submitDeposit() {
+  onConfirm() {
     if (!this.amount || this.amount <= 0) {
       this.errorMessage = 'Amount must be greater than zero.';
       return;
@@ -52,7 +52,6 @@ export class DepositModalComponent {
 
         setTimeout(() => {
           this.close();
-          window.location.reload();
         }, 2000);
       },
       error: (err) => {

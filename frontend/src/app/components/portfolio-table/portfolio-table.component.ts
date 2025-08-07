@@ -1,4 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PortfolioService } from '../../services/portfolio.service';
 import { SellModalComponent } from '../sell-modal/sell-modal.component';
@@ -12,14 +18,13 @@ import { SellModalComponent } from '../sell-modal/sell-modal.component';
 })
 export class PortfolioTableComponent implements OnInit {
   @Output() buy = new EventEmitter<void>();
+  @Output() sold = new EventEmitter<void>();
+  @ViewChild(SellModalComponent) sellModal!: SellModalComponent;
 
   assets: any[] = [];
   orders: any[] = [];
 
   activeTab = 'portfolio';
-
-  selectedTicker: string = '';
-  modalVisible = false;
 
   constructor(private portfolioService: PortfolioService) {}
 
@@ -28,27 +33,27 @@ export class PortfolioTableComponent implements OnInit {
     this.loadRecentOrders();
   }
 
-  public loadAssets(): void {
+  loadAssets(): void {
     this.portfolioService.getPnlByAsset().subscribe({
       next: (data: any) => (this.assets = data),
       error: (err) => console.error('Error fetching assets:', err),
     });
   }
 
-  private loadRecentOrders(): void {
+  loadRecentOrders(): void {
     this.portfolioService.getRecentOrders().subscribe({
       next: (data: any) => (this.orders = data),
       error: (err) => console.error('Error fetching recent orders:', err),
     });
   }
 
-  openSellModal(ticker: string): void {
-    this.selectedTicker = ticker;
-    this.modalVisible = true;
+  openSell(selectedTicker: string) {
+    this.sellModal.open(selectedTicker);
   }
 
-  closeModal(): void {
-    this.modalVisible = false;
-    this.selectedTicker = '';
+  onSold() {
+    this.loadAssets();
+    this.loadRecentOrders();
+    this.sold.emit();
   }
 }

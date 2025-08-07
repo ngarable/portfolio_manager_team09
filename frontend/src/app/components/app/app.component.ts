@@ -23,16 +23,21 @@ import { ChatbotComponent } from '../chatbot/chatbot.component';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  @ViewChild(BuyModalComponent) buyModal!: BuyModalComponent;
-  @ViewChild(DepositModalComponent) depositModal!: DepositModalComponent;
-
-  constructor() {}
+  @ViewChild('buyModal') buyModal!: BuyModalComponent;
+  @ViewChild('depositModal') depositModal!: DepositModalComponent;
+  @ViewChild('table') table!: PortfolioTableComponent;
+  @ViewChild('charts') charts!: AssetsChartsComponent;
+  @ViewChild('balance') balance!: BalanceComponent;
 
   openBuy() {
     this.buyModal.open();
   }
-
   openDeposit() {
     this.depositModal.open();
+  }
+
+  handleSold() {
+    this.charts.loadAllocs();
+    this.balance.loadBalance();
   }
 }

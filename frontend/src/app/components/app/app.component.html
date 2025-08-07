@@ -1,18 +1,33 @@
 <div class="dashboard-wrapper">
   <div class="dashboard-left">
     <div class="balance-wrapper">
-      <app-balance (deposit)="openDeposit()"></app-balance>
+      <app-balance #balance (deposit)="openDeposit()"></app-balance>
     </div>
     <div class="charts-wrapper">
-      <app-assets-charts></app-assets-charts>
+      <app-assets-charts #charts></app-assets-charts>
     </div>
   </div>
   <div class="dashboard-right">
     <div class="table-section">
-      <app-portfolio-table (buy)="openBuy()"></app-portfolio-table>
+      <app-portfolio-table
+        #table
+        (buy)="openBuy()"
+        (sold)="handleSold()"
+      ></app-portfolio-table>
     </div>
-    <app-deposit-modal></app-deposit-modal>
-    <app-buy-modal></app-buy-modal>
+    <app-buy-modal
+      #buyModal
+      (purchased)="
+        table.loadAssets();
+        table.loadRecentOrders();
+        charts.loadAllocs();
+        balance.loadBalance()
+      "
+    ></app-buy-modal>
+    <app-deposit-modal
+      #depositModal
+      (deposited)="balance.loadBalance()"
+    ></app-deposit-modal>
   </div>
 </div>
 <app-chatbot></app-chatbot>

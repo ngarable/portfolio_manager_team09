@@ -24,10 +24,10 @@ export class AssetsChartsComponent implements OnInit {
   constructor(private portfolioService: PortfolioService) {}
 
   ngOnInit() {
-    this.reloadAllocs();
+    this.loadAllocs();
   }
 
-  public reloadAllocs() {
+  loadAllocs() {
     this.portfolioService.getTypeAllocation().subscribe({
       next: (data) => {
         this.typeAlloc = data;

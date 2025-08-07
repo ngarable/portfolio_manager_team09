@@ -63,10 +63,7 @@
                 {{ a.pnl | number : "1.2-2" }}$
               </td>
               <td>
-                <button
-                  class="btn btn-primary"
-                  (click)="openSellModal(a.ticker)"
-                >
+                <button class="btn btn-primary" (click)="openSell(a.ticker)">
                   Sell
                 </button>
               </td>
@@ -117,9 +114,5 @@
   </div>
 
   <!-- SELL MODAL -->
-  <app-sell-modal
-    [visible]="modalVisible"
-    [ticker]="selectedTicker"
-    (close)="closeModal()"
-  ></app-sell-modal>
+  <app-sell-modal #sellModal (sold)="onSold()"></app-sell-modal>
 </div>

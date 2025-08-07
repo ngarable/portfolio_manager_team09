@@ -2,8 +2,7 @@
   <div class="modal card">
     <h2 class="modal__title">Deposit Funds</h2>
 
-    <form class="modal__form" (ngSubmit)="submitDeposit()">
-      <!-- Success banner -->
+    <form class="modal__form" (ngSubmit)="onConfirm()">
       <div *ngIf="successMessage" class="modal__success">
         {{ successMessage }}
       </div>
