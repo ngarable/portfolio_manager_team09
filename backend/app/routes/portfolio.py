@@ -152,21 +152,19 @@ def buy_asset():
         return jsonify({"error": f"Could not fetch price for {ticker}"}), 500
 
     total_cost = price * quantity
-    current_balance = portfolioService.get_cash_balance()
+    current_cash = portfolioService.get_cash_balance()
 
-    if current_balance < total_cost:
+    if current_cash < total_cost:
         return jsonify({
             "error": "Insufficient funds",
-            "available_balance": current_balance,
+            "available_balance": current_cash,
             "required": total_cost
         }), 400
 
     try:
         order = portfolioService.buy_asset(ticker, asset_type, quantity)
-        portfolioService.set_cash_balance(current_balance - total_cost)
-        portfolioService.update_snapshot()
+        portfolioService.process_buy_flow(total_cost)
         snapshot = portfolioService.get_latest_snapshot()
-
         return jsonify({
             "message": "Buy order placed successfully",
             "order": order,
@@ -250,64 +248,50 @@ def gainers_losers():
 
 @portfolio_bp.route("/assets/sell", methods=["POST"])
 def sell_asset():
-    data = request.get_json()  # Parse JSON request body
-    ticker_to_sell = data.get('ticker')
-    quantity_to_sell = data.get('quantity')
+    data = request.get_json() or {}
+    ticker = data.get('ticker')
+    qty_to_sell = data.get('quantity')
 
-    if not ticker_to_sell or not quantity_to_sell:
-        return jsonify({"error": "Missing ticker or quantity in request body"}), 400
+    if not ticker or not qty_to_sell:
+        return jsonify({"error": "Missing ticker or quantity"}), 400
 
     assets = fetch_assets()
-    if not assets:
-        return jsonify({"error": "No assets found"}), 404
+    asset = next((a for a in assets if a['ticker'] == ticker), None)
+    if not asset:
+        return jsonify({"message": f"Asset {ticker} not found"}), 400
 
-    # check if ticker exists in the portfolio
-    asset = next((a for a in assets if a['ticker'] == ticker_to_sell), None)
+    current_qty = int(asset['quantity'])
+    if current_qty < qty_to_sell:
+        return jsonify({
+            "message": f"Not enough {ticker} to sell. Current quantity: {current_qty}"
+        }), 400
 
-    if asset:
-        current_quantity = int(asset['quantity'])  # convert from string to int
-        if current_quantity >= quantity_to_sell:
+    batches = portfolioService.get_remaining_asset_batches(ticker)
+    remaining = qty_to_sell
+    proceeds = 0
+    price = yfinanceService.getMarketPrice(ticker)
+    if price is None:
+        return jsonify({"error": "Market price not available"}), 500
 
-            asset_batches = portfolioService.get_remaining_asset_batches(
-                ticker_to_sell)
-
-            remaining = quantity_to_sell
-            total_profit = 0
-            market_price = yfinanceService.getMarketPrice(ticker_to_sell)
-
-            if market_price is None:
-                return jsonify({"error": "Market price not available"}), 500
-
-            for batch in asset_batches:
-                if remaining <= 0:
-                    break
-
-                qty_available = batch['remaining_quantity']
-                qty_sold = min(remaining, qty_available)
-
-                new_remaining_quantity = qty_available - qty_sold
-
-                portfolioService.update_order_quantity(
-                    batch['id'], new_remaining_quantity)
-
-                total_profit += qty_sold * market_price
-                remaining -= qty_sold
-        else:
-            return jsonify({"message": f"Not enough {ticker_to_sell} to sell. Current quantity: {current_quantity}"}), 400
-    else:
-        return jsonify({"message": f"Asset {ticker_to_sell} not found"}), 400
+    for batch in batches:
+        if remaining <= 0:
+            break
+        avail = batch['remaining_quantity']
+        sold = min(remaining, avail)
+        portfolioService.update_order_quantity(batch['id'], avail - sold)
+        proceeds += sold * price
+        remaining -= sold
 
     portfolioService.sell_asset(
-        ticker_to_sell, quantity_to_sell, market_price, asset['asset_type'])
+        ticker, qty_to_sell, price, asset['asset_type'])
 
-    current_balance = portfolioService.get_cash_balance()
-    portfolioService.set_cash_balance(current_balance + total_profit)
-    portfolioService.update_snapshot()
+    portfolioService.process_sell_flow(proceeds)
 
+    snapshot = portfolioService.get_latest_snapshot()
     return jsonify({
-        "message": f"Sold {quantity_to_sell} of {ticker_to_sell}",
-        "profit": total_profit,
-        "available_balance": portfolioService.get_cash_balance()
+        "message": f"Sold {qty_to_sell} of {ticker}",
+        "proceeds": proceeds,
+        "snapshot": snapshot
     }), 200
 
 
@@ -350,18 +334,25 @@ def asset_value_allocation():
 
 @portfolio_bp.route("/deposit", methods=["PUT"])
 def deposit():
-    payload = request.get_json()
-    amount = payload.get("amount")
-    if not amount or float(amount) <= 0:
+    payload = request.get_json() or {}
+    try:
+        amount = float(payload.get("amount", 0))
+    except ValueError:
         return jsonify({"error": "Invalid deposit amount"}), 400
 
-    current_balance = portfolioService.get_cash_balance()
-    portfolioService.set_cash_balance(current_balance + float(amount))
-    portfolioService.update_snapshot()
-    return jsonify({
-        "message": "Deposit successful",
-        "available_balance": portfolioService.get_cash_balance()
-    }), 200
+    if amount <= 0:
+        return jsonify({"error": "Amount must be greater than zero"}), 400
+
+    try:
+        portfolioService.add_cash_balance(amount)
+        new_balance = portfolioService.get_cash_balance()
+        return jsonify({
+            "message": "Deposit successful",
+            "available_balance": new_balance
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @portfolio_bp.route("/balance", methods=["GET"])

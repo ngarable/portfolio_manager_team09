@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 from app.services.yfinanceService import getMarketPrice
 from ..db import mysql
 
@@ -23,7 +24,7 @@ def get_recent_orders():
     orders = cursor.fetchall()
     data = []
     for order in orders:
-        date_str = order[0].strftime('%Y-%m-%d')  # format date here
+        date_str = order[0].strftime('%Y-%m-%d')
         data.append({
             "date": date_str,
             "ticker": order[1],
@@ -264,3 +265,165 @@ def get_snapshot_history():
         }
         for row in rows
     ]
+
+
+def add_cash_balance(amount: float):
+    """Increment today’s cash_balance by `amount` (and update net_worth),
+       without ever touching total_invested_value."""
+    today = date.today()
+    amount_dec = Decimal(str(amount))
+    cursor = mysql.connection.cursor()
+
+    cursor.execute(
+        "SELECT total_invested_value, cash_balance FROM snapshots WHERE date = %s",
+        (today,),
+    )
+    row = cursor.fetchone()
+
+    if row:
+        invested_value = Decimal(str(row[0]))
+        old_cash = Decimal(str(row[1]))
+
+        new_cash = old_cash + amount_dec
+        new_net = invested_value + new_cash
+
+        cursor.execute(
+            "UPDATE snapshots "
+            "SET cash_balance = %s, net_worth = %s "
+            "WHERE date = %s",
+            (new_cash, new_net, today),
+        )
+
+    else:
+        cursor.execute(
+            "SELECT total_invested_value, cash_balance "
+            "FROM snapshots WHERE date < %s "
+            "ORDER BY date DESC LIMIT 1",
+            (today,),
+        )
+        prev = cursor.fetchone()
+        if prev:
+            invested_value = Decimal(str(prev[0]))
+            old_cash = Decimal(str(prev[1]))
+        else:
+            invested_value = Decimal("0")
+            old_cash = Decimal("0")
+
+        new_cash = old_cash + amount_dec
+        new_net = invested_value + new_cash
+
+        cursor.execute(
+            "INSERT INTO snapshots "
+            "(date, total_invested_value, cash_balance, net_worth) "
+            "VALUES (%s, %s, %s, %s)",
+            (today, invested_value, new_cash, new_net),
+        )
+
+    mysql.connection.commit()
+    cursor.close()
+
+
+def process_buy_flow(amount: float):
+    today = date.today()
+    amt = Decimal(str(amount))
+    cursor = mysql.connection.cursor()
+
+    cursor.execute(
+        "SELECT total_invested_value, cash_balance "
+        "FROM snapshots WHERE date = %s",
+        (today,),
+    )
+    row = cursor.fetchone()
+
+    if row:
+        invested = Decimal(str(row[0]))
+        cash = Decimal(str(row[1]))
+    else:
+        cursor.execute(
+            "SELECT total_invested_value, cash_balance "
+            "FROM snapshots WHERE date < %s "
+            "ORDER BY date DESC LIMIT 1",
+            (today,),
+        )
+        prev = cursor.fetchone()
+        if prev:
+            invested = Decimal(str(prev[0]))
+            cash = Decimal(str(prev[1]))
+        else:
+            invested = Decimal("0")
+            cash = Decimal("0")
+
+    new_invested = invested + amt
+    new_cash = cash - amt
+    new_net = new_invested + new_cash
+
+    if row:
+        cursor.execute(
+            "UPDATE snapshots "
+            "SET total_invested_value = %s, cash_balance = %s, net_worth = %s "
+            "WHERE date = %s",
+            (new_invested, new_cash, new_net, today),
+        )
+    else:
+        cursor.execute(
+            "INSERT INTO snapshots "
+            "(date, total_invested_value, cash_balance, net_worth) "
+            "VALUES (%s, %s, %s, %s)",
+            (today, new_invested, new_cash, new_net),
+        )
+
+    mysql.connection.commit()
+    cursor.close()
+
+
+def process_sell_flow(amount: float):
+    today = date.today()
+    amt = Decimal(str(amount))
+    cursor = mysql.connection.cursor()
+
+    cursor.execute(
+        "SELECT total_invested_value, cash_balance "
+        "FROM snapshots WHERE date = %s",
+        (today,),
+    )
+    row = cursor.fetchone()
+
+    if row:
+        invested = Decimal(str(row[0]))
+        cash = Decimal(str(row[1]))
+    else:
+        cursor.execute(
+            "SELECT total_invested_value, cash_balance "
+            "FROM snapshots WHERE date < %s "
+            "ORDER BY date DESC LIMIT 1",
+            (today,),
+        )
+        prev = cursor.fetchone()
+        if prev:
+            invested = Decimal(str(prev[0]))
+            cash = Decimal(str(prev[1]))
+        else:
+            invested = Decimal("0")
+            cash = Decimal("0")
+
+    new_invested = invested - amt
+    new_cash = cash + amt
+    new_net = new_cash + new_invested
+
+    if row:
+        cursor.execute(
+            "UPDATE snapshots "
+            "SET total_invested_value = %s, cash_balance = %s, net_worth = %s "
+            "WHERE date = %s",
+            (new_invested, new_cash, new_net, today),
+        )
+    else:
+        cursor.execute(
+            "INSERT INTO snapshots "
+            "(date, total_invested_value, cash_balance, net_worth) "
+            "VALUES (%s, %s, %s, %s)",
+            (today, new_invested, new_cash, new_net),
+        )
+
+    mysql.connection.commit()
+    cursor.close()
