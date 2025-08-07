@@ -1,5 +1,4 @@
 <div class="dashboard-wrapper">
-  <!-- LEFT COLUMN -->
   <div class="dashboard-left">
     <div class="balance-wrapper">
       <app-balance (deposit)="openDeposit()"></app-balance>
@@ -8,15 +7,12 @@
       <app-assets-charts></app-assets-charts>
     </div>
   </div>
-  <!-- RIGHT COLUMN -->
   <div class="dashboard-right">
     <div class="table-section">
       <app-portfolio-table (buy)="openBuy()"></app-portfolio-table>
     </div>
-
-    <!-- Modals stay here -->
-    <app-deposit-modal (deposited)="handleDeposit($event)"></app-deposit-modal>
-    <app-buy-modal (purchased)="handlePurchase($event)"></app-buy-modal>
+    <app-deposit-modal></app-deposit-modal>
+    <app-buy-modal></app-buy-modal>
   </div>
 </div>
 <app-chatbot></app-chatbot>

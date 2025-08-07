@@ -111,7 +111,7 @@ export class BuyModalComponent {
       });
   }
 
-  onCancel() {
+  close() {
     this.show = false;
   }
 }

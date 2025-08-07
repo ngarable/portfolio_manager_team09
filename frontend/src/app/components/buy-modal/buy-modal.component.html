@@ -3,7 +3,6 @@
     <h2 class="modal__title">Buy Asset</h2>
 
     <form class="modal__form" (ngSubmit)="onConfirm()">
-      <!-- Success banner -->
       <div *ngIf="successMessage" class="modal__success">
         {{ successMessage }}
       </div>
@@ -42,7 +41,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          (click)="onCancel()"
+          (click)="close()"
           [disabled]="isLoading"
         >
           Cancel

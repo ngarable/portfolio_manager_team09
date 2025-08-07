@@ -32,7 +32,6 @@ export class SellModalComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['visible'] && this.visible) {
-      // you already fetch details elsewhere if needed
       this.errorMessage = this.successMessage = null;
       this.isLoading = false;
     }
@@ -54,7 +53,6 @@ export class SellModalComponent implements OnChanges {
           this.successMessage = `Sold ${qty} share${qty > 1 ? 's' : ''} of ${
             this.ticker
           }!`;
-          // auto-close & reload
           setTimeout(() => {
             this.onClose();
             window.location.reload();
